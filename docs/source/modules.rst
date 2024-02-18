@@ -1,4 +1,4 @@
-cwordtm Module Documentation
+CWordTM Module Documentation
 ============================
 
 .. toctree::
