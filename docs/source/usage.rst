@@ -1,4 +1,4 @@
-Usage : cwordtm 0.5.0
+Usage : CWordTM 0.5.0
 =====================
 
 A topic modeling toolkit on the Holy Scripture and other text
