@@ -1,5 +1,5 @@
-cwordtm package
-===============
+cwordtm Module
+==============
 
 Subpackages
 -----------
