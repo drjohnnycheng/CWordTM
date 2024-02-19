@@ -1,0 +1,11 @@
+cwordtm.data package
+====================
+
+Module contents
+---------------
+
+.. automodule:: cwordtm.data
+   :special-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
