@@ -8,7 +8,7 @@ Welcome to CWordTM's documentation!
 
 .. toctree::
    :maxdepth: 4
-   :caption: Contents:
+   :caption: Contents
 
    modules
    usage
