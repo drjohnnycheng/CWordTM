@@ -1,11 +1,11 @@
-cwordtm Module
+CWordTM Module
 ==============
 
 Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
 
    cwordtm.data
    cwordtm.dictionary
