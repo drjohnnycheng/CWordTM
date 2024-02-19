@@ -1,5 +1,5 @@
-CWordTM Module Documentation
-============================
+CWordTM API Reference
+=====================
 
 .. toctree::
    :maxdepth: 4
