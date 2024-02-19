@@ -1,0 +1,11 @@
+cwordtm.dictionary package
+==========================
+
+Module contents
+---------------
+
+.. automodule:: cwordtm.dictionary
+   :special-members:
+   :members:
+   :undoc-members:
+   :show-inheritance:
