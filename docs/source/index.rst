@@ -10,8 +10,8 @@ Welcome to CWordTM's documentation!
    :maxdepth: 4
    :caption: Contents
 
-   modules
    usage
+   modules
 
 Indices and tables
 ==================
