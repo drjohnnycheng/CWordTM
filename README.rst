@@ -1,5 +1,5 @@
-CWordTM 0.5.0
-=============
+CWordTM Package (cwordtm 0.5.0)
+===============================
 
 A topic modeling toolkit on the Holy Scripture and other text
 from low-code to pro-code
