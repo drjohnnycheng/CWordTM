@@ -1,4 +1,4 @@
-CWordTM Package (cwordtm 0.5.2)
+CWordTM Package (cwordtm 0.5.3)
 ===============================
 
 A topic modeling toolkit on the Holy Scripture and other text
