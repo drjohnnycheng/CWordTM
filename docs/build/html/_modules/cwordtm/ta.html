@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cwordtm.ta &mdash; CWordTM 0.6.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2bd037f0"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CWordTM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">CWordTM Package (cwordtm 0.6.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CWordTM API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CWordTM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">cwordtm.ta</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cwordtm.ta</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ta.py</span>
+<span class="c1">#    </span>
+<span class="c1"># Extractive text summarization of a prescribed range of Scripture</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2024 CWordTM Project </span>
+<span class="c1"># Author: Johnny Cheng &lt;drjohnnycheng@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Updated: 16 May 2024</span>
+<span class="c1">#</span>
+<span class="c1"># URL: https://github.com/drjohnnycheng/cwordtm.git</span>
+<span class="c1"># For license information, see LICENSE.TXT</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span>
+
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">sent_tokenize</span><span class="p">,</span> <span class="n">word_tokenize</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">WordNetLemmatizer</span>
+<span class="kn">from</span> <span class="nn">nltk.tag</span> <span class="kn">import</span> <span class="n">pos_tag</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">util</span>
+
+
+<div class="viewcode-block" id="get_sentences">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.get_sentences">[docs]</a>
+<span class="k">def</span> <span class="nf">get_sentences</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the list of sentences tokenized from the collection of documents (df).</span>
+
+<span class="sd">    :param docs: The input documents storing the Scripture, default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame</span>
+<span class="sd">    :param lang: If the value is &#39;chi&#39; , the processed language is assumed to be Chinese</span>
+<span class="sd">        otherwise, it is English, default to &#39;en&#39;</span>
+<span class="sd">    :type lang: str, optional</span>
+<span class="sd">    :return: The list of sentences tokenized from the collection of document</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">join_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">lang</span> <span class="o">==</span> <span class="s1">&#39;chi&#39;</span> <span class="k">else</span> <span class="s1">&#39; &#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">docs</span>
+
+    <span class="k">if</span> <span class="n">lang</span> <span class="o">==</span> <span class="s1">&#39;chi&#39;</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">sentences</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;。&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sentences</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">sentences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[0-9]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">sentences</span> <span class="o">=</span> <span class="n">sent_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[.:•]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">sent</span><span class="p">)</span> <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">]</span>
+        <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">sent</span> <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sentences</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">sentences</span></div>
+
+
+
+<div class="viewcode-block" id="get_sent_scores">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.get_sent_scores">[docs]</a>
+<span class="k">def</span> <span class="nf">get_sent_scores</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">diction</span><span class="p">,</span> <span class="n">sent_len</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>   
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the dictionary of a list of sentences with their scores </span>
+<span class="sd">    computed by their words.</span>
+
+<span class="sd">    :param sentences: The list of sentences for computing their scores,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type sentences: list</span>
+<span class="sd">    :param diction: The dictionary storing the collection of tokenized words</span>
+<span class="sd">        with their frequencies</span>
+<span class="sd">    :type diction: collections.Counter object</span>
+<span class="sd">    :param sent_len: The upper bound of the number of sentences to be processed,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type sent_len: int</span>
+<span class="sd">    :return: The list of sentences tokenized from the collection of document</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sent_weight</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="n">sent_wordcount_net</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">word_weight</span> <span class="ow">in</span> <span class="n">diction</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">word_weight</span> <span class="ow">in</span> <span class="n">sentence</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">sent_wordcount_net</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]</span> <span class="ow">in</span> <span class="n">sent_weight</span><span class="p">:</span>
+                    <span class="n">sent_weight</span><span class="p">[</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">diction</span><span class="p">[</span><span class="n">word_weight</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sent_weight</span><span class="p">[</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]]</span> <span class="o">=</span> <span class="n">diction</span><span class="p">[</span><span class="n">word_weight</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">sent_weight</span> <span class="o">!=</span> <span class="nb">dict</span><span class="p">()</span> <span class="ow">and</span> <span class="n">sent_weight</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> \
+            <span class="ow">and</span> <span class="n">sent_wordcount_net</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sent_weight</span><span class="p">[</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]]</span> <span class="o">=</span> <span class="n">sent_weight</span><span class="p">[</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]]</span> <span class="o">/</span> \
+                                                <span class="n">sent_wordcount_net</span>
+
+    <span class="k">return</span> <span class="n">sent_weight</span></div>
+
+
+
+<div class="viewcode-block" id="get_summary">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.get_summary">[docs]</a>
+<span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">sent_weight</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">sent_len</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the summary of the collection of sentences.</span>
+
+<span class="sd">    :param sentences: The list of target sentences for summarization, default to None</span>
+<span class="sd">    :type sentences: list</span>
+<span class="sd">    :param sent_weight: The dictionary of a list of sentences with their scores </span>
+<span class="sd">        computed by their words</span>
+<span class="sd">    :type sent_weight: collections.Counter object</span>
+<span class="sd">    :param threshold: The minimum value of sentence weight for extracting that sentence</span>
+<span class="sd">        as part of the final summary, default to None</span>
+<span class="sd">    :type threshold: float</span>
+<span class="sd">    :param sent_len: The upper bound of the number of sentences to be processed,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type sent_len: int</span>
+<span class="sd">    :return: The list of sentences of the extractive summary</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sent_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]</span> <span class="ow">in</span> <span class="n">sent_weight</span> <span class="ow">and</span> \
+            <span class="n">sent_weight</span><span class="p">[</span><span class="n">sentence</span><span class="p">[:</span><span class="n">sent_len</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">threshold</span><span class="p">):</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+
+
+<div class="viewcode-block" id="summary_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.summary_chi">[docs]</a>
+<span class="k">def</span> <span class="nf">summary_chi</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">sent_len</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an extractive summary of a collection of Chinese sentences.</span>
+
+<span class="sd">    :param docs: The collection of target documents for summarization,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame or pandas.Series or numpy.ndarray or list</span>
+<span class="sd">    :param weight: The factor to be multiplied to the threshold, which </span>
+<span class="sd">        determines the sentences as the summary, default to 1.5</span>
+<span class="sd">    :type weight: float, optional</span>
+<span class="sd">    :param sent_len: The upper bound of the number of sentences to be processed,</span>
+<span class="sd">        default to 8</span>
+<span class="sd">    :type sent_len: int, optional</span>
+<span class="sd">    :return: The list of sentences of the extractive summary</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lang</span> <span class="o">=</span> <span class="s1">&#39;chi&#39;</span>
+    <span class="n">util</span><span class="o">.</span><span class="n">set_lang</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
+    <span class="n">diction</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_diction</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="n">get_sentences</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">lang</span><span class="p">)</span>
+
+    <span class="n">sent_scores</span> <span class="o">=</span> <span class="n">get_sent_scores</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">diction</span><span class="p">,</span> <span class="n">sent_len</span><span class="p">)</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sent_scores</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">get_summary</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">sent_scores</span><span class="p">,</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">sent_len</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="preprocess_sent">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.preprocess_sent">[docs]</a>
+<span class="k">def</span> <span class="nf">preprocess_sent</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preprocesses English text by tokenizing text into sentences of words,</span>
+<span class="sd">    converting text to lower case, removing stopwords, lemmatize text, and</span>
+<span class="sd">    tagging text with Part-of-Speech (POS).</span>
+
+<span class="sd">    :param text: The text to be preprocessed, default to None</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :return: The list of preprocessed and tagged sentences (word, pos)</span>
+<span class="sd">    :rtype: list of tuples (str, str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># print(&quot;Preprocessing text ...&quot;)</span>
+
+    <span class="c1"># Tokenize text into sentences</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="n">sent_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    
+    <span class="c1"># Convert text to lowercase and tokenize text into words</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">]</span>
+    
+    <span class="c1"># Remove stopwords</span>
+    <span class="n">stop_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">))</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">sentence</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stop_words</span><span class="p">]</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">]</span>
+    
+    <span class="c1"># Lemmatize text</span>
+    <span class="n">lemmatizer</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[[</span><span class="n">lemmatizer</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">sentence</span><span class="p">]</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">]</span>
+    
+    <span class="c1"># Tag text with POS</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">sentences</span></div>
+
+
+
+<div class="viewcode-block" id="summary_en">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.ta.summary_en">[docs]</a>
+<span class="k">def</span> <span class="nf">summary_en</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">sent_len</span><span class="o">=</span><span class="mi">8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns an extractive summary of a collection of English sentences.</span>
+
+<span class="sd">    :param docs: The collection of target documents for summarization,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame or pandas.Series or numpy.ndarray or list or text</span>
+<span class="sd">    :param sent_len: The upper bound of the number of sentences to be processed,</span>
+<span class="sd">        default to 8</span>
+<span class="sd">    :type sent_len: int, optional</span>
+<span class="sd">    :return: The list of sentences of the extractive summary</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">join_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">join_str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">docs</span>
+
+    <span class="n">tagged_sentences</span> <span class="o">=</span> <span class="n">preprocess_sent</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># Compute sentence scores</span>
+    <span class="n">sentence_scores</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">tagged_sentences</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="n">sentence</span><span class="p">:</span>
+            <span class="c1"># Filter with nouns and verbs</span>
+            <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;NN&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">pos</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;VB&#39;</span><span class="p">):</span>
+                <span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">sentence_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+
+    <span class="c1"># Extract top scoring sentences</span>
+    <span class="n">top_sentences</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sentence_scores</span><span class="p">)),</span> \
+                           <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">sentence_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> \
+                           <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="n">sent_len</span><span class="p">]</span>
+
+    <span class="c1"># Build a summary</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="n">sent_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># summary = &#39; &#39;.join([sentences[i] for i in top_sentences])</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">[</span><span class="n">sentences</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_sentences</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Johnny Cheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

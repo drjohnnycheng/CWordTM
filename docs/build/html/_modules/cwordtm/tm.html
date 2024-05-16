@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cwordtm.tm &mdash; CWordTM 0.6.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2bd037f0"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CWordTM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">CWordTM Package (cwordtm 0.6.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CWordTM API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CWordTM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">cwordtm.tm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cwordtm.tm</h1><div class="highlight"><pre>
+<span></span><span class="c1"># tm.py</span>
+<span class="c1">#    </span>
+<span class="c1"># Topic modeling with LDA, NMF, and BERTopic for a prescribed range of</span>
+<span class="c1">#   Scripture or other text</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2024 CWordTM Project </span>
+<span class="c1"># Author: Johnny Cheng &lt;drjohnnycheng@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Updated: 16 May 2024</span>
+<span class="c1">#</span>
+<span class="c1"># URL: https://github.com/drjohnnycheng/cwordtm.git</span>
+<span class="c1"># For license information, see LICENSE.TXT</span>
+
+
+<span class="c1"># Dependencies</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">IFrame</span>
+<span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span>
+
+<span class="kn">import</span> <span class="nn">jieba</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">ENGLISH_STOP_WORDS</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.snowball</span> <span class="kn">import</span> <span class="n">SnowballStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">TweetTokenizer</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+
+<span class="kn">from</span> <span class="nn">gensim</span> <span class="kn">import</span> <span class="n">corpora</span><span class="p">,</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">gensim.models.coherencemodel</span> <span class="kn">import</span> <span class="n">CoherenceModel</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">bertopic</span> <span class="kn">import</span> <span class="n">BERTopic</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">BertTokenizer</span><span class="p">,</span> <span class="n">BertModel</span>
+
+<span class="kn">import</span> <span class="nn">pyLDAvis.gensim_models</span> <span class="k">as</span> <span class="nn">gensimvis</span>
+<span class="kn">import</span> <span class="nn">pyLDAvis</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">util</span>
+
+
+<div class="viewcode-block" id="load_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.load_text">[docs]</a>
+<span class="k">def</span> <span class="nf">load_text</span><span class="p">(</span><span class="n">textfile</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads and returns the list of documents from the prescribed file (&#39;textfile&#39;).</span>
+
+<span class="sd">    :param textfile: The prescribed text file from which the text is loaded,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type textfile: str</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :return: The list of documents loaded</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">textfile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="n">text_col</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="load_bible">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.load_bible">[docs]</a>
+<span class="k">def</span> <span class="nf">load_bible</span><span class="p">(</span><span class="n">textfile</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads and returns the Bible Scripture from the prescribed internal</span>
+<span class="sd">    file (&#39;textfile&#39;).</span>
+
+<span class="sd">    :param textfile: The package&#39;s internal Bible text from which the text is loaded,</span>
+<span class="sd">        either World English Bible (&#39;web.csv&#39;) or Chinese Union Version (Traditional)</span>
+<span class="sd">        (&#39;cuv.csv&#39;), default to None</span>
+<span class="sd">    :type textfile: str</span>
+<span class="sd">    :param cat: The category indicating a subset of the Scripture to be loaded, where</span>
+<span class="sd">        0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories</span>
+<span class="sd">        [&#39;tor&#39;, &#39;oth&#39;, &#39;ket&#39;, &#39;map&#39;, &#39;mip&#39;, &#39;gos&#39;, &#39;nth&#39;, &#39;pau&#39;, &#39;epi&#39;, &#39;apo&#39;] (See </span>
+<span class="sd">        the package&#39;s internal file &#39;data/book_cat.csv&#39;), default to 0</span>
+<span class="sd">    :type cat: int or str, optional</span>
+<span class="sd">    :param group: The flag indicating whether the loaded text is grouped by chapter,</span>
+<span class="sd">        default to True</span>
+<span class="sd">    :type group: bool, optional</span>
+<span class="sd">    :return: The collection of Scripture loaded</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># textfile = &quot;web.csv&quot;</span>
+    <span class="n">scfile</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">textfile</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading Bible &#39;</span><span class="si">%s</span><span class="s2">&#39; ...&quot;</span> <span class="o">%</span><span class="n">scfile</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">scfile</span><span class="p">)</span>
+
+    <span class="n">cat_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tor&#39;</span><span class="p">,</span> <span class="s1">&#39;oth&#39;</span><span class="p">,</span> <span class="s1">&#39;ket&#39;</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="s1">&#39;mip&#39;</span><span class="p">,</span>\
+                <span class="s1">&#39;gos&#39;</span><span class="p">,</span> <span class="s1">&#39;nth&#39;</span><span class="p">,</span> <span class="s1">&#39;pau&#39;</span><span class="p">,</span> <span class="s1">&#39;epi&#39;</span><span class="p">,</span> <span class="s1">&#39;apo&#39;</span><span class="p">]</span>	
+    <span class="n">cat</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span> <span class="ow">or</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;ot&#39;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">testament</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span> <span class="ow">or</span> <span class="n">cat</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">testament</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>               
+    <span class="k">elif</span> <span class="n">cat</span> <span class="ow">in</span> <span class="n">cat_list</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">cat</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">group</span><span class="p">:</span>
+        <span class="c1"># Group verses into chapters</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;book_no&#39;</span><span class="p">,</span> <span class="s1">&#39;chapter&#39;</span><span class="p">])</span>\
+                        <span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)})</span>\
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;　&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">text</span><span class="p">)</span></div>
+
+
+   
+<div class="viewcode-block" id="process_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.process_text">[docs]</a>
+<span class="k">def</span> <span class="nf">process_text</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processes the English text through tokenization, converting to lower case,</span>
+<span class="sd">    removing all digits, stemming, and removing punctuations and stopwords.</span>
+
+<span class="sd">    :param doc: The prescribed text, in form of a string, to be processed,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type doc: str</span>
+<span class="sd">    :return: The list of the processed strings</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># List of punctuation</span>
+    <span class="n">punc</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span>
+
+    <span class="c1"># List of stop words</span>
+    <span class="n">add_stop</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">stop_words</span> <span class="o">=</span> <span class="n">ENGLISH_STOP_WORDS</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">add_stop</span><span class="p">)</span>
+
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">TweetTokenizer</span><span class="p">()</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">each</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[0-9]+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">each</span><span class="p">)</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">SnowballStemmer</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">punc</span><span class="p">]</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stop_words</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">doc</span></div>
+
+
+
+<div class="viewcode-block" id="LDA">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA">[docs]</a>
+<span class="k">class</span> <span class="nc">LDA</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The LDA object for Latent Dirichlet Allocation (LDA) modeling.</span>
+<span class="sd">    </span>
+<span class="sd">    :cvar num_topics: The number of topics to be built from the modeling,</span>
+<span class="sd">        default to 10.</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar textfile: The filename of the text file to be processed</span>
+<span class="sd">    :vartype textfile: str</span>
+<span class="sd">    :ivar chi: The flag indicating whether the processed text is in Chinese or not,</span>
+<span class="sd">        True stands for Traditional Chinese or False for English</span>
+<span class="sd">    :vartype chi: bool</span>
+<span class="sd">    :ivar num_topics: The number of topics set for the topic model</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar docs: The collection of the original documents to be processed</span>
+<span class="sd">    :vartype docs: pandas.DataFrame or list</span>
+<span class="sd">    :ivar pro_docs: The collection of documents, in form of list of lists of words</span>
+<span class="sd">        after text preprocessing</span>
+<span class="sd">    :vartype pro_docs: list</span>
+<span class="sd">    :ivar dictionary: The dictionary of word ids with their tokenized words</span>
+<span class="sd">        from preprocessed documents (&#39;pro_docs&#39;)</span>
+<span class="sd">    :vartype dictionary: gensim.corpora.Dictionary</span>
+<span class="sd">    :ivar corpus: The list of documents, where each document is a list of tuples</span>
+<span class="sd">        (word id, word frequency in the particular document)</span>
+<span class="sd">    :vartype corpus: list</span>
+<span class="sd">    :ivar model: The LDA model object</span>
+<span class="sd">    :vartype model: gensim.models.LdaModel</span>
+<span class="sd">    :ivar vis_data: The LDA model&#39;s prepared data for visualization</span>
+<span class="sd">    :vartype vis_data: pyLDAvis.PreparedData</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LDA.__init__">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textfile</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_topics</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">textfile</span> <span class="o">=</span> <span class="n">textfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chi</span> <span class="o">=</span> <span class="n">chi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span> <span class="o">=</span> <span class="n">num_topics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vis_data</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    
+<div class="viewcode-block" id="LDA.preprocess">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.preprocess">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original English documents (cwordtm.tm.LDA.docs)</span>
+<span class="sd">        by invoking cwordtm.tm.process_text, and build a dictionary and</span>
+<span class="sd">        a corpus from the preprocessed documents for the LDA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">process_text</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus for the LDA model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LDA.preprocess_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.preprocess_chi">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess_chi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original Chinese documents (cwordtm.tm.LDA.docs) </span>
+<span class="sd">        by tokenizing text, removing stopwords, and building a dictionary</span>
+<span class="sd">        and a corpus from the preprocessed documents for the LDA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Build stop words</span>
+        <span class="n">stop_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;tc_stopwords_2.txt&quot;</span><span class="p">)</span>
+        <span class="n">stopwords</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">stop_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>\
+                     <span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Tokenize&quot;the text using Jieba</span>
+        <span class="n">dict_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;user_dict_4.txt&quot;</span><span class="p">)</span>
+        <span class="n">jieba</span><span class="o">.</span><span class="n">load_userdict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_file</span><span class="p">))</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Replace special characters</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span> \
+                                     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Remove stop words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="p">])</span> \
+                                        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="LDA.fit">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the LDA model with the created corpus and dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">LdaModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">,</span> 
+                            <span class="n">num_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">,</span> 
+                            <span class="n">id2word</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> 
+                            <span class="n">passes</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="LDA.viz">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.viz">[docs]</a>
+    <span class="k">def</span> <span class="nf">viz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the Intertopic Distance Map for the built LDA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vis_data</span> <span class="o">=</span> <span class="n">gensimvis</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">)</span>
+        <span class="n">pyLDAvis</span><span class="o">.</span><span class="n">enable_notebook</span><span class="p">()</span>
+        <span class="n">pyLDAvis</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vis_data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If no visualization is shown,&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  you may execute the following commands to show the visualization:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &gt; import pyLDAvis&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &gt; pyLDAvis.display(lda.vis_data)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LDA.show_topics">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.show_topics">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the topics with their keywords from the built LDA model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Topics from LDA Model:&quot;</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">print_topics</span><span class="p">())</span></div>
+
+    
+<div class="viewcode-block" id="LDA.evaluate">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.LDA.evaluate">[docs]</a>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes and outputs the coherence score, perplexity, topic diversity,</span>
+<span class="sd">            and topic size distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compute coherence score</span>
+        <span class="n">coherence_model</span> <span class="o">=</span> <span class="n">CoherenceModel</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                         <span class="n">texts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">,</span>
+                                         <span class="n">dictionary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
+                                         <span class="n">coherence</span><span class="o">=</span><span class="s1">&#39;c_v&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Coherence: </span><span class="si">{</span><span class="n">coherence_model</span><span class="o">.</span><span class="n">get_coherence</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute perplexity</span>
+        <span class="n">perplexity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">log_perplexity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Perplexity: </span><span class="si">{</span><span class="n">perplexity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute topic diversity</span>
+        <span class="n">topic_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">))]</span>
+        <span class="n">total_docs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span>
+        <span class="n">topic_diversity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([(</span><span class="n">size</span><span class="o">/</span><span class="n">total_docs</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">topic_sizes</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Topic diversity: </span><span class="si">{</span><span class="n">topic_diversity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute topic size distribution</span>
+        <span class="c1"># topic_sizes = [len(self.model[self.corpus[i]]) for i in range(len(self.corpus))]</span>
+        <span class="n">topic_size_distribution</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Topic size distribution: </span><span class="si">{</span><span class="n">topic_size_distribution</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+<span class="c1"># End of LDA Class</span>
+
+
+<div class="viewcode-block" id="lda_process">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.lda_process">[docs]</a>
+<span class="k">def</span> <span class="nf">lda_process</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pipelines the LDA modeling.</span>
+
+<span class="sd">    :param doc_file: The filename of the prescribed text file to be loaded,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type doc_file: str</span>
+<span class="sd">    :param source: The source of the prescribed document file (&#39;doc_file&#39;),</span>
+<span class="sd">        where 0 refers to internal store of the package and 1 to external file,</span>
+<span class="sd">        default to 0</span>
+<span class="sd">    :type source: int, optional</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :param cat: The category indicating a subset of the Scripture to be loaded, where</span>
+<span class="sd">        0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories</span>
+<span class="sd">        [&#39;tor&#39;, &#39;oth&#39;, &#39;ket&#39;, &#39;map&#39;, &#39;mip&#39;, &#39;gos&#39;, &#39;nth&#39;, &#39;pau&#39;, &#39;epi&#39;, &#39;apo&#39;] (See </span>
+<span class="sd">        the package&#39;s internal file &#39;data/book_cat.csv&#39;), default to 0</span>
+<span class="sd">    :type cat: int or str, optional</span>
+<span class="sd">    :param chi: The flag indicating whether the text is processed as Chinese (True)</span>
+<span class="sd">        or English (False), default to False</span>
+<span class="sd">    :type chi: bool, optional</span>
+<span class="sd">    :param group: The flag indicating whether the loaded text is grouped by chapter,</span>
+<span class="sd">        default to True</span>
+<span class="sd">    :type group: bool, optional</span>
+<span class="sd">    :param eval: The flag indicating whether the model evaluation results will be shown,</span>
+<span class="sd">        default to False</span>
+<span class="sd">    :type eval: bool, optional</span>
+<span class="sd">    :return: The pipelined LDA</span>
+<span class="sd">    :rtype: cwordtm.tm.LDA object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lda</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">chi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_bible</span><span class="p">(</span><span class="n">lda</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">cat</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">lda</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="n">text_col</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Corpus loaded!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">chi</span><span class="p">:</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">preprocess_chi</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text preprocessed!&quot;</span><span class="p">)</span>
+
+    <span class="n">lda</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text trained!&quot;</span><span class="p">)</span>
+    <span class="n">lda</span><span class="o">.</span><span class="n">viz</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Visualization prepared!&quot;</span><span class="p">)</span>
+    <span class="n">lda</span><span class="o">.</span><span class="n">show_topics</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">eval</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Model Evaluation Scores:&quot;</span><span class="p">)</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">lda</span></div>
+
+
+
+<div class="viewcode-block" id="NMF">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF">[docs]</a>
+<span class="k">class</span> <span class="nc">NMF</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The NMF object for Non-negative Matrix Factorization (NMF) modeling.</span>
+
+<span class="sd">    :cvar num_topics: The number of topics to be built from the modeling,</span>
+<span class="sd">        default to 10.</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar textfile: The filename of the text file to be processed</span>
+<span class="sd">    :vartype textfile: str</span>
+<span class="sd">    :ivar chi: The flag indicating whether the processed text is in Chinese or not,</span>
+<span class="sd">        True stands for Traditional Chinese or False for English</span>
+<span class="sd">    :vartype chi: bool</span>
+<span class="sd">    :ivar num_topics: The number of topics set for the topic model</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar docs: The collection of the original documents to be processed</span>
+<span class="sd">    :vartype docs: pandas.DataFrame or list</span>
+<span class="sd">    :ivar pro_docs: The collection of documents, in form of list of lists of words</span>
+<span class="sd">        after text preprocessing</span>
+<span class="sd">    :vartype pro_docs: list</span>
+<span class="sd">    :ivar dictionary: The dictionary of word ids with their tokenized words</span>
+<span class="sd">        from preprocessed documents (&#39;pro_docs&#39;)</span>
+<span class="sd">    :vartype dictionary: gensim.corpora.Dictionary</span>
+<span class="sd">    :ivar corpus: The list of documents, where each document is a list of tuples</span>
+<span class="sd">        (word id, word frequency in the particular document)</span>
+<span class="sd">    :vartype corpus: list</span>
+<span class="sd">    :ivar model: The NMF model object</span>
+<span class="sd">    :vartype model: gensim.models.Nmf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NMF.__init__">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textfile</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_topics</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">textfile</span> <span class="o">=</span> <span class="n">textfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chi</span> <span class="o">=</span> <span class="n">chi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span> <span class="o">=</span> <span class="n">num_topics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    
+<div class="viewcode-block" id="NMF.preprocess">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.preprocess">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original English documents (cwordtm.tm.NMF.docs)</span>
+<span class="sd">        by invoking cwordtm.tm.process_text, and build a dictionary</span>
+<span class="sd">        and a corpus from the preprocessed documents for the NMF model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">process_text</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus for the NMF model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="NMF.preprocess_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.preprocess_chi">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess_chi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original Chinese documents (cwordtm.tm.NMF.docs) </span>
+<span class="sd">        by tokenizing text, removing stopwords, and building a dictionary</span>
+<span class="sd">        and a corpus from the preprocessed documents for the NMF model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Build stop words</span>
+        <span class="n">stop_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;tc_stopwords_2.txt&quot;</span><span class="p">)</span>
+        <span class="n">stopwords</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">stop_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>\
+                     <span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Tokenize&quot;the text using Jieba</span>
+        <span class="n">dict_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;user_dict_4.txt&quot;</span><span class="p">)</span>
+        <span class="n">jieba</span><span class="o">.</span><span class="n">load_userdict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_file</span><span class="p">))</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Replace special characters</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span> \
+                                     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Remove stop words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="p">])</span> \
+                                        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="NMF.fit">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the NMF model with the created corpus and dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Nmf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">,</span>
+                                <span class="n">num_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NMF.show_topics_words">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.show_topics_words">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_topics_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the topics with their keywords from the built NMF model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Topics-Words from NMF Model:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">topic_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">num_topics</span><span class="p">):</span>
+            <span class="n">topic_words</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">show_topic</span><span class="p">(</span><span class="n">topic_id</span><span class="p">,</span> <span class="n">topn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Topic </span><span class="si">{</span><span class="n">topic_id</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">word_id</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">topic_words</span><span class="p">:</span>
+                <span class="c1"># word = self.dictionary.id2token[int(word_id)]</span>
+                <span class="n">word</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">word_id</span><span class="p">)]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> (</span><span class="si">%.6f</span><span class="s2">)&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">prob</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="NMF.evaluate">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.NMF.evaluate">[docs]</a>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes and outputs the coherence score, topic diversity,</span>
+<span class="sd">        and topic size distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Compute coherence score</span>
+        <span class="n">coherence_model</span> <span class="o">=</span> <span class="n">CoherenceModel</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+                                         <span class="n">texts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">,</span>
+                                         <span class="n">dictionary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
+                                         <span class="n">coherence</span><span class="o">=</span><span class="s1">&#39;c_v&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Coherence: </span><span class="si">{</span><span class="n">coherence_model</span><span class="o">.</span><span class="n">get_coherence</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute topic diversity</span>
+        <span class="n">topic_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">))]</span>
+        <span class="n">total_docs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span>
+        <span class="n">topic_diversity</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([(</span><span class="n">size</span><span class="o">/</span><span class="n">total_docs</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="n">topic_sizes</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Topic diversity: </span><span class="si">{</span><span class="n">topic_diversity</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Compute topic size distribution</span>
+        <span class="c1"># topic_sizes = [len(self.model[self.corpus[i]]) for i in range(len(self.corpus))]</span>
+        <span class="n">topic_size_distribution</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">topic_sizes</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Topic size distribution: </span><span class="si">{</span><span class="n">topic_size_distribution</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+<span class="c1"># End of NMF Class</span>
+
+
+<div class="viewcode-block" id="nmf_process">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.nmf_process">[docs]</a>
+<span class="k">def</span> <span class="nf">nmf_process</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pipelines the NMF modeling.</span>
+
+<span class="sd">    :param doc_file: The filename of the prescribed text file to be loaded,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type doc_file: str</span>
+<span class="sd">    :param source: The source of the prescribed document file (&#39;doc_file&#39;),</span>
+<span class="sd">        where 0 refers to internal store of the package and 1 to external file,</span>
+<span class="sd">        default to 0</span>
+<span class="sd">    :type source: int, optional</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :param cat: The category indicating a subset of the Scripture to be loaded, where</span>
+<span class="sd">        0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories</span>
+<span class="sd">        [&#39;tor&#39;, &#39;oth&#39;, &#39;ket&#39;, &#39;map&#39;, &#39;mip&#39;, &#39;gos&#39;, &#39;nth&#39;, &#39;pau&#39;, &#39;epi&#39;, &#39;apo&#39;] (See </span>
+<span class="sd">        the package&#39;s internal file &#39;data/book_cat.csv&#39;), default to 0</span>
+<span class="sd">    :type cat: int or str, optional</span>
+<span class="sd">    :param chi: The flag indicating whether the text is processed as Chinese (True)</span>
+<span class="sd">        or English (False), default to False</span>
+<span class="sd">    :type chi: bool, optional</span>
+<span class="sd">    :param group: The flag indicating whether the loaded text is grouped by chapter,</span>
+<span class="sd">        default to True</span>
+<span class="sd">    :type group: bool, optional</span>
+<span class="sd">    :param eval: The flag indicating whether the model evaluation results will be shown,</span>
+<span class="sd">        default to False</span>
+<span class="sd">    :type eval: bool, optional</span>
+<span class="sd">    :return: The pipelined NMF</span>
+<span class="sd">    :rtype: cwordtm.tm.NMF object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nmf</span> <span class="o">=</span> <span class="n">NMF</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">chi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nmf</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_bible</span><span class="p">(</span><span class="n">nmf</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">cat</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nmf</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">nmf</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="n">text_col</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Corpus loaded!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">chi</span><span class="p">:</span>
+        <span class="n">nmf</span><span class="o">.</span><span class="n">preprocess_chi</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nmf</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text preprocessed!&quot;</span><span class="p">)</span>
+
+    <span class="n">nmf</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text trained!&quot;</span><span class="p">)</span>
+    <span class="n">nmf</span><span class="o">.</span><span class="n">show_topics_words</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">eval</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Model Evaluation Scores:&quot;</span><span class="p">)</span>
+        <span class="n">nmf</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">nmf</span></div>
+
+
+
+<div class="viewcode-block" id="BTM">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM">[docs]</a>
+<span class="k">class</span> <span class="nc">BTM</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The BTM object for BERTopic modeling.</span>
+
+<span class="sd">    :cvar num_topics: The number of topics to be built from the modeling,</span>
+<span class="sd">        default to 10</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar textfile: The filename of the text file to be processed</span>
+<span class="sd">    :vartype textfile: str</span>
+<span class="sd">    :ivar chi: The flag indicating whether the processed text is in Chinese or not,</span>
+<span class="sd">        True stands for Traditional Chinese or False for English</span>
+<span class="sd">    :vartype chi: bool</span>
+<span class="sd">    :ivar num_topics: The number of topics set for the topic model</span>
+<span class="sd">    :vartype num_topics: int</span>
+<span class="sd">    :ivar docs: The collection of the original documents to be processed</span>
+<span class="sd">    :vartype docs: pandas.DataFrame or list</span>
+<span class="sd">    :ivar pro_docs: The collection of documents, in form of list of lists of words</span>
+<span class="sd">        after text preprocessing</span>
+<span class="sd">    :vartype pro_docs: list</span>
+<span class="sd">    :ivar dictionary: The dictionary of word ids with their tokenized words</span>
+<span class="sd">        from preprocessed documents (&#39;pro_docs&#39;)</span>
+<span class="sd">    :vartype dictionary: gensim.corpora.Dictionary</span>
+<span class="sd">    :ivar corpus: The list of documents, where each document is a list of tuples</span>
+<span class="sd">        (word id, word frequency in the particular document)</span>
+<span class="sd">    :vartype corpus: list</span>
+<span class="sd">    :ivar model: The BERTopic model object</span>
+<span class="sd">    :vartype model: bertopic.BERTopic</span>
+<span class="sd">    :ivar embed: The flag indicating whether the BERTopic model is trained</span>
+<span class="sd">        with the BERT pretrained model</span>
+<span class="sd">    :vartype embed: bool</span>
+<span class="sd">    :ivar bmodel: The BERT pretrained model</span>
+<span class="sd">    :vartype bmodel: transformers.BertModel</span>
+<span class="sd">    :ivar bt_vectorizer: The vectorizer extracted from the BERTopic model</span>
+<span class="sd">        for model evaluation</span>
+<span class="sd">    :vartype bt_vectorizer: sklearn.feature_extraction.text.CountVectorizer</span>
+<span class="sd">    :ivar bt_analyzer: The analyzer extracted from the BERTopic model</span>
+<span class="sd">        for model evaluation</span>
+<span class="sd">    :vartype bt_analyzer: functools.partial</span>
+<span class="sd">    :ivar cleaned_docs: The list of documents (string) built by grouping</span>
+<span class="sd">        the original documents by the topics created from the BERTopic model</span>
+<span class="sd">    :vartype cleaned_docs: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BTM.__init__">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">textfile</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_topics</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">embed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">textfile</span> <span class="o">=</span> <span class="n">textfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chi</span> <span class="o">=</span> <span class="n">chi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span> <span class="o">=</span> <span class="n">num_topics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed</span> <span class="o">=</span> <span class="n">embed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmodel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bt_vectorizer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bt_analyzer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_docs</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    
+<div class="viewcode-block" id="BTM.preprocess">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.preprocess">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original English documents (cwordtm.tm.BTM.docs)</span>
+<span class="sd">        by invoking cwordtm.tm.process_text, and build a dictionary and</span>
+<span class="sd">        a corpus from the preprocessed documents for the BERTopic model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">process_text</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus for the BERTopic model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="BTM.preprocess_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.preprocess_chi">[docs]</a>
+    <span class="k">def</span> <span class="nf">preprocess_chi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the original Chinese documents (cwordtm.tm.BTM.docs) </span>
+<span class="sd">        by tokenizing text, removing stopwords, and building a dictionary</span>
+<span class="sd">        and a corpus from the preprocessed documents for the BERTopic model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Build stop words</span>
+        <span class="n">stop_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;tc_stopwords_2.txt&quot;</span><span class="p">)</span>
+        <span class="n">stopwords</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">stop_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>\
+                     <span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Tokenize&quot;the text using Jieba</span>
+        <span class="n">dict_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;user_dict_4.txt&quot;</span><span class="p">)</span>
+        <span class="n">jieba</span><span class="o">.</span><span class="n">load_userdict</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_file</span><span class="p">))</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Replace special characters</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">word</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">]</span> \
+                                     <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="c1"># Remove stop words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">doc</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="p">])</span> \
+                                        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span>
+
+        <span class="c1"># Create a dictionary and corpus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="BTM.fit">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the BERTopic model for English text with the created corpus</span>
+<span class="sd">        and dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">j_pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmodel</span> <span class="o">=</span> <span class="n">BertModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;bert-base-uncased&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BERTopic</span><span class="p">(</span><span class="n">language</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> 
+                                  <span class="n">calculate_probabilities</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">embedding_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bmodel</span><span class="p">,</span>
+                                  <span class="n">nr_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BERTopic</span><span class="p">(</span><span class="n">language</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> 
+                                  <span class="n">calculate_probabilities</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">nr_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">j_pro_docs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BTM.fit_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.fit_chi">[docs]</a>
+    <span class="k">def</span> <span class="nf">fit_chi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the BERTopic model for Chinese text with the created corpus</span>
+<span class="sd">        and dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">j_pro_docs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pro_docs</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmodel</span> <span class="o">=</span> <span class="n">BertModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s1">&#39;bert-base-chinese&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BERTopic</span><span class="p">(</span><span class="n">language</span><span class="o">=</span><span class="s1">&#39;chinese (traditional)&#39;</span><span class="p">,</span> 
+                                  <span class="n">calculate_probabilities</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">embedding_model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bmodel</span><span class="p">,</span>
+                                  <span class="n">nr_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BERTopic</span><span class="p">(</span><span class="n">language</span><span class="o">=</span><span class="s1">&#39;chinese (traditional)&#39;</span><span class="p">,</span> 
+                                  <span class="n">calculate_probabilities</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">nr_topics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_topics</span><span class="p">)</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">j_pro_docs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BTM.show_topics">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.show_topics">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_topics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shows the topics with their keywords from the built BERTopic model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Topics from BERTopic Model:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_topic_freq</span><span class="p">()</span><span class="o">.</span><span class="n">Topic</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">topic</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">twords</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_topic</span><span class="p">(</span><span class="n">topic</span><span class="p">)]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Topic </span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">twords</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BTM.pre_evaluate">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.pre_evaluate">[docs]</a>
+    <span class="k">def</span> <span class="nf">pre_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the original documents per built topic for model evaluation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">doc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Document&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">,</span>
+                       <span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">)),</span>
+                       <span class="s2">&quot;Topic&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">topics_</span><span class="p">})</span>
+        <span class="n">documents_per_topic</span> <span class="o">=</span> <span class="n">doc_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;Topic&#39;</span><span class="p">],</span> \
+                             <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;Document&#39;</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_preprocess_text</span><span class="p">(</span>\
+                              <span class="n">documents_per_topic</span><span class="o">.</span><span class="n">Document</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># Extract vectorizer and analyzer from BERTopic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bt_vectorizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">vectorizer_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bt_analyzer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bt_vectorizer</span><span class="o">.</span><span class="n">build_analyzer</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="BTM.evaluate">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.evaluate">[docs]</a>
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes and outputs the coherence score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pre_evaluate</span><span class="p">()</span>
+
+            <span class="c1"># Extract features for Topic Coherence evaluation</span>
+            <span class="c1"># words = self.bt_vectorizer.get_feature_names_out()</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bt_analyzer</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cleaned_docs</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="n">corpora</span><span class="o">.</span><span class="n">Dictionary</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+
+            <span class="n">topic_words</span> <span class="o">=</span> <span class="p">[[</span><span class="n">words</span> <span class="k">for</span> <span class="n">words</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_topic</span><span class="p">(</span><span class="n">topic</span><span class="p">)]</span> 
+                            <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">topics_</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+            <span class="n">coherence</span> <span class="o">=</span> <span class="n">CoherenceModel</span><span class="p">(</span><span class="n">topics</span><span class="o">=</span><span class="n">topic_words</span><span class="p">,</span> <span class="n">texts</span><span class="o">=</span><span class="n">tokens</span><span class="p">,</span> <span class="n">corpus</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corpus</span><span class="p">,</span> 
+                                                            <span class="n">dictionary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">coherence</span><span class="o">=</span><span class="s1">&#39;c_v&#39;</span><span class="p">)</span>\
+                        <span class="o">.</span><span class="n">get_coherence</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">coherence</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;** No coherence score computed!&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Coherence: </span><span class="si">{</span><span class="n">coherence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;** No coherence score computed!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BTM.viz">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.BTM.viz">[docs]</a>
+    <span class="k">def</span> <span class="nf">viz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visualize the built BERTopic model through Intertopic Distance Map,</span>
+<span class="sd">        Topic Word Score Charts, and Topic Similarity Matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">BERTopic Model Visualization:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Intertopic Distance Map</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">visualize_topics</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;** No Intertopic Distance Map shown for your text!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Visualize Terms (Topic Word Scores)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">visualize_barchart</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;** No chart of Topic Word Scores shown for your text!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Visualize Topic Similarity</span>
+        <span class="k">try</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">visualize_heatmap</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;** No heatmap of Topic Similarity shown for your text!&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  If no visualization is shown,&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    you may execute the following commands one-by-one:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      btm.model.visualize_topics()&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      btm.model.visualize_barchart()&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;      btm.model.visualize_heatmap()&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span></div>
+</div>
+
+
+<span class="c1"># End of BTM Class</span>
+
+
+<div class="viewcode-block" id="btm_process">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.tm.btm_process">[docs]</a>
+<span class="k">def</span> <span class="nf">btm_process</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">chi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pipelines the BERTopic modeling.</span>
+
+<span class="sd">    :param doc_file: The filename of the prescribed text file to be loaded,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type doc_file: str</span>
+<span class="sd">    :param source: The source of the prescribed document file (&#39;doc_file&#39;),</span>
+<span class="sd">        where 0 refers to internal store of the package and 1 to external file,</span>
+<span class="sd">        default to 0</span>
+<span class="sd">    :type source: int, optional</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :param cat: The category indicating a subset of the Scripture to be loaded, where</span>
+<span class="sd">        0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories</span>
+<span class="sd">        [&#39;tor&#39;, &#39;oth&#39;, &#39;ket&#39;, &#39;map&#39;, &#39;mip&#39;, &#39;gos&#39;, &#39;nth&#39;, &#39;pau&#39;, &#39;epi&#39;, &#39;apo&#39;] (See </span>
+<span class="sd">        the package&#39;s internal file &#39;data/book_cat.csv&#39;), default to 0</span>
+<span class="sd">    :type cat: int or str, optional</span>
+<span class="sd">    :param chi: The flag indicating whether the text is processed as Chinese (True)</span>
+<span class="sd">        or English (False), default to False</span>
+<span class="sd">    :type chi: bool, optional</span>
+<span class="sd">    :param group: The flag indicating whether the loaded text is grouped by chapter,</span>
+<span class="sd">        default to True</span>
+<span class="sd">    :type group: bool, optional</span>
+<span class="sd">    :param eval: The flag indicating whether the model evaluation results will be shown,</span>
+<span class="sd">        default to False</span>
+<span class="sd">    :type eval: bool, optional</span>
+<span class="sd">    :return: The pipelined BTM</span>
+<span class="sd">    :rtype: cwordtm.tm.BTM object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">btm</span> <span class="o">=</span> <span class="n">BTM</span><span class="p">(</span><span class="n">doc_file</span><span class="p">,</span> <span class="n">chi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_bible</span><span class="p">(</span><span class="n">btm</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">cat</span><span class="o">=</span><span class="n">cat</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">btm</span><span class="o">.</span><span class="n">textfile</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="n">text_col</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Corpus loaded!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">chi</span><span class="p">:</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">preprocess_chi</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chinese text preprocessed!&quot;</span><span class="p">)</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">fit_chi</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text preprocessed!&quot;</span><span class="p">)</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Text trained!&quot;</span><span class="p">)</span>
+
+    <span class="n">btm</span><span class="o">.</span><span class="n">show_topics</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">eval</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Model Evaluation Scores:&quot;</span><span class="p">)</span>
+        <span class="n">btm</span><span class="o">.</span><span class="n">evaluate</span><span class="p">()</span>
+
+    <span class="n">btm</span><span class="o">.</span><span class="n">viz</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">btm</span></div>
+
+
+<span class="c1"># End of cwordtm.tm Module</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Johnny Cheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

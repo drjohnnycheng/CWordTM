@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cwordtm.util &mdash; CWordTM 0.6.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2bd037f0"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CWordTM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">CWordTM Package (cwordtm 0.6.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CWordTM API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CWordTM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">cwordtm.util</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cwordtm.util</h1><div class="highlight"><pre>
+<span></span><span class="c1"># util.py</span>
+<span class="c1">#    </span>
+<span class="c1"># Some utility functions including loading Scriptue, setting Scripture language,</span>
+<span class="c1">#   extracting a specifc range of Scripture</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2024 CWordTM Project </span>
+<span class="c1"># Author: Johnny Cheng &lt;drjohnnycheng@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Updated: 16 May 2024</span>
+<span class="c1">#</span>
+<span class="c1"># URL: https://github.com/drjohnnycheng/cwordtm.git</span>
+<span class="c1"># For license information, see LICENSE.TXT</span>
+
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">importlib_resources</span> <span class="kn">import</span> <span class="n">files</span>
+
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">PorterStemmer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">WordNetLemmatizer</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="kn">import</span> <span class="n">word_tokenize</span>
+
+<span class="kn">import</span> <span class="nn">jieba</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<span class="n">chi_flag</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">glang</span> <span class="o">=</span> <span class="s1">&#39;en&#39;</span>
+<span class="n">stops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="is_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.is_chi">[docs]</a>
+<span class="k">def</span> <span class="nf">is_chi</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks whether the Chinese language flag is set.</span>
+
+<span class="sd">    :return: True if the Chinese language flag (chi_flag) is set,</span>
+<span class="sd">        False otherwise</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">chi_flag</span></div>
+
+
+
+<div class="viewcode-block" id="load_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.load_text">[docs]</a>
+<span class="k">def</span> <span class="nf">load_text</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">nr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads and returns the text from the prescribed file path (&#39;filepath&#39;).</span>
+
+<span class="sd">    :param filepath: The prescribed filepath from which the text is loaded,</span>
+<span class="sd">        default to None</span>
+<span class="sd">    :type filepath: str</span>
+<span class="sd">    :param nr: The number of rows of text to be loaded; 0 represents all rows,</span>
+<span class="sd">        default to 0</span>
+<span class="sd">    :type nr: int, optional</span>
+<span class="sd">    :param info: The flag whether the dataset information is shown,</span>
+<span class="sd">        default to False</span>
+<span class="sd">    :type info: bool, optional</span>
+<span class="sd">    :return: The collection of text with the prescribed number of rows loaded</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading file &#39;</span><span class="si">%s</span><span class="s2">&#39; ...&quot;</span> <span class="o">%</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial Records:&quot;</span><span class="p">)</span>
+       <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nr</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Dataset Information:&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="load_word">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.load_word">[docs]</a>
+<span class="k">def</span> <span class="nf">load_word</span><span class="p">(</span><span class="n">ver</span><span class="o">=</span><span class="s1">&#39;web.csv&#39;</span><span class="p">,</span> <span class="n">nr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads and returns the text from the prescribed internal file (&#39;ver&#39;).</span>
+
+<span class="sd">    :param ver: The package&#39;s internal Bible text from which the text is loaded,</span>
+<span class="sd">        either World English Bible (&#39;web.csv&#39;) or Chinese Union Version</span>
+<span class="sd">        (Traditional)(&#39;cuv.csv&#39;), default to &#39;web.csv&#39;</span>
+<span class="sd">    :type ver: str, optional</span>
+<span class="sd">    :param nr: The number of rows of Scripture to be loaded; 0 represents all rows,</span>
+<span class="sd">        default to 0</span>
+<span class="sd">    :type nr: int, optional</span>
+<span class="sd">    :param info: The flag whether the dataset information is shown,</span>
+<span class="sd">        default to False</span>
+<span class="sd">    :type info: bool, optional</span>
+<span class="sd">    :return: The collection of Scripture with the prescribed number of rows loaded</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">scfile</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">ver</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading file &#39;</span><span class="si">%s</span><span class="s2">&#39; ...&quot;</span> <span class="o">%</span><span class="n">scfile</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">scfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+       <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial Records:&quot;</span><span class="p">)</span>
+       <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nr</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Dataset Information:&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="group_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.group_text">[docs]</a>
+<span class="k">def</span> <span class="nf">group_text</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s1">&#39;chapter&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Groups the Bible Scripture in the DataFrame &#39;df&#39; by the prescribed column, and</span>
+<span class="sd">    &#39;df&#39; should include columns &#39;book&#39;, &#39;book_no&#39;, &#39;chapter&#39;, &#39;verse&#39;, &#39;text&#39;,</span>
+<span class="sd">    &#39;testament&#39;, &#39;category&#39;, &#39;cat&#39;, and &#39;cat_no&#39;.</span>
+
+<span class="sd">    :param df: The input DataFrame storing the Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param column: The column by which the Scriture is grouped, default to &#39;chapter&#39;</span>
+<span class="sd">    :type column: str, optional</span>
+<span class="sd">    :return: The grouped Scripture</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;book_no&#39;</span><span class="p">,</span> <span class="n">column</span><span class="p">])</span>\
+                        <span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)})</span>\
+                <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">gdf</span></div>
+
+
+
+<div class="viewcode-block" id="get_list">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_list">[docs]</a>
+<span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s1">&#39;book&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts and returns the prescribed column from the Scripture</span>
+<span class="sd">    stored in the DataFrame &#39;df&#39;.</span>
+
+<span class="sd">    :param df: The input DataFrame storing the Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param column: The column by which the Scriture is grouped, default to &#39;book&#39;</span>
+<span class="sd">    :type column: str, optional</span>
+<span class="sd">    :return: The grouped Scripture</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;No such column!&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="get_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_text">[docs]</a>
+<span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts and returns the text from the Scripture</span>
+<span class="sd">    stored in the DataFrame &#39;df&#39; after joining the list of text into a string</span>
+<span class="sd">    and removing all the ideographic spaces (&#39;\u3000&#39;) from the text.</span>
+
+<span class="sd">    :param df: The input DataFrame storing the Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :return: The extracted text</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_text_list">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_text_list">[docs]</a>
+<span class="k">def</span> <span class="nf">get_text_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts and returns the list of text from the Scripture</span>
+<span class="sd">    stored in the DataFrame &#39;df&#39; after removing all the ideographic spaces</span>
+<span class="sd">    (&#39;\u3000&#39;) from the text.</span>
+
+<span class="sd">    :param df: The input DataFrame storing the Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :return: The extracted text</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="clean_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.clean_text">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">text_col</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleans the text from the Scripture stored in the DataFrame &#39;df&#39;,</span>
+<span class="sd">    by removing all digits, replacing newline by a space, removing</span>
+<span class="sd">    English stopwords, converting all characters to lower case, and</span>
+<span class="sd">    removing all characters except alphanumeric and whitespace.</span>
+
+<span class="sd">    :param df: The input DataFrame storing the Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param text_col: The name of the text column to be extracted, default to &#39;text&#39;</span>
+<span class="sd">    :type text_col: str, optional</span>
+<span class="sd">    :return: The cleaned text in a DataFrame</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">sw</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">sw</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]]</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">text_col</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;[^\w\s]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+<div class="viewcode-block" id="clean_sentences">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.clean_sentences">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_sentences</span><span class="p">(</span><span class="n">sentences</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cleans the list of sentences by invoking the function preprocess_text.</span>
+
+<span class="sd">    :param sentences: The list of sentences to be cleaned, default to None</span>
+<span class="sd">    :type sentences: list</span>
+<span class="sd">    :return: The list of cleaned sentences</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="n">cleaned_sent</span> <span class="o">=</span> <span class="n">preprocess_text</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned_sent</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cleaned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cleaned_sent</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cleaned</span></div>
+
+
+
+<div class="viewcode-block" id="preprocess_text">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.preprocess_text">[docs]</a>
+<span class="k">def</span> <span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Preprocesses English text by converting text to lower case, removing </span>
+<span class="sd">    special characters and digits, removing punctuations, removing stopwords,</span>
+<span class="sd">    removing short words, and Lemmatize text.</span>
+
+<span class="sd">    :param text: The text to be preprocessed, default to None</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :return: The preprocessed text</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># print(&quot;Preprocessing text ...&quot;)</span>
+
+    <span class="c1"># Convert text to lowercase</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="c1"># Remove special characters and digits</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^a-zA-Z\s]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># Remove punctuation</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span>
+
+    <span class="c1"># Remove stopwords</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> \
+                    <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)])</span>
+
+    <span class="c1"># Remove short words (length &lt; 3)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">])</span>
+
+    <span class="c1"># Lemmatization</span>
+    <span class="n">lemmatizer</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">lemmatizer</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)])</span>
+
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+
+<div class="viewcode-block" id="add_chi_vocab">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.add_chi_vocab">[docs]</a>
+<span class="k">def</span> <span class="nf">add_chi_vocab</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the Chinese Bible vocabulary from the internal file &#39;bible_vocab.txt&#39;,</span>
+<span class="sd">    and adds to the Jieba word list for future tokenization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">vocab_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;bible_vocab.txt&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading Chinese vocabulary &#39;</span><span class="si">%s</span><span class="s2">&#39; ...&quot;</span> <span class="o">%</span><span class="n">vocab_file</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vocab_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">vocab_list</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">vocab</span> <span class="ow">in</span> <span class="n">vocab_list</span><span class="p">:</span>
+            <span class="n">jieba</span><span class="o">.</span><span class="n">add_word</span><span class="p">(</span><span class="n">vocab</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="chi_stops">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.chi_stops">[docs]</a>
+<span class="k">def</span> <span class="nf">chi_stops</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads the common Chinese (Traditional) vocabulary to Jieba for</span>
+<span class="sd">    future tokenization, and the Chinese stopwords for future</span>
+<span class="sd">    wordcloud plotting.</span>
+
+<span class="sd">    :return: The list of stopwords for wordcloud plotting</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dict_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.dictionary&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;dict.txt.big.txt&#39;</span><span class="p">)</span>
+    <span class="n">cloud_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">(</span><span class="s1">&#39;cwordtm.dictionary&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;stopWord_cloudmod.txt&#39;</span><span class="p">)</span>
+    <span class="n">jieba</span><span class="o">.</span><span class="n">set_dictionary</span><span class="p">(</span><span class="n">dict_file</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cloud_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="set_lang">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.set_lang">[docs]</a>
+<span class="k">def</span> <span class="nf">set_lang</span><span class="p">(</span><span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the prescribed language (English or Chinese (Traditional)) </span>
+<span class="sd">    for further text processing.</span>
+
+<span class="sd">    :param lang: The prescribed language for text processing, where</span>
+<span class="sd">        &#39;en&#39; stands for English or &#39;chi&#39; for Traditonal Chinese,</span>
+<span class="sd">        default to &#39;en&#39;</span>
+<span class="sd">    :type lang: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">glang</span><span class="p">,</span> <span class="n">stops</span>
+    <span class="n">glang</span> <span class="o">=</span> <span class="n">lang</span>
+    <span class="k">if</span> <span class="n">glang</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>  <span class="c1"># English</span>
+        <span class="n">stops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s2">&quot;english&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Chinese (Traditional)</span>
+        <span class="n">add_chi_vocab</span><span class="p">()</span>
+        <span class="n">stops</span> <span class="o">=</span> <span class="n">chi_stops</span><span class="p">()</span>
+        <span class="n">chi_flag</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="get_diction_en">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_diction_en">[docs]</a>
+<span class="k">def</span> <span class="nf">get_diction_en</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tokenizes the collection of English documents and builds a dictionary</span>
+<span class="sd">    of words with their frequencies.</span>
+
+<span class="sd">    :param docs: The collection of text, default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame or list</span>
+<span class="sd">    :return: The dictionary of words with their frequencies</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="n">words</span> <span class="o">=</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="n">stem</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span>
+    
+    <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">stem</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stops</span><span class="p">:</span>
+            <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="n">diction</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">diction</span></div>
+
+
+
+<div class="viewcode-block" id="get_diction_chi">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_diction_chi">[docs]</a>
+<span class="k">def</span> <span class="nf">get_diction_chi</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tokenizes the collection of Chinese documents and builds a dictionary</span>
+<span class="sd">    of words with their frequencies.</span>
+
+<span class="sd">    :param docs: The collection of documents, default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame or list</span>
+<span class="sd">    :return: The dictionary of words with their frequencies</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">docs</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u3000</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[、．。，！？『』「」〔〕]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stops</span><span class="p">:</span>
+            <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="n">diction</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">diction</span></div>
+
+
+
+<div class="viewcode-block" id="get_diction">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_diction">[docs]</a>
+<span class="k">def</span> <span class="nf">get_diction</span><span class="p">(</span><span class="n">docs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines which is the target language, English or Chinese,</span>
+<span class="sd">    in order to build a dictionary of words with their frequencies.</span>
+
+<span class="sd">    :param docs: The collection of documents, default to None</span>
+<span class="sd">    :type docs: pandas.DataFrame or list</span>
+<span class="sd">    :return: The dictionary of words with their frequencies</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">glang</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_diction_en</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_diction_chi</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="chi_sent_terms">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.chi_sent_terms">[docs]</a>
+<span class="k">def</span> <span class="nf">chi_sent_terms</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the list of Chinese words tokenized from the input text.</span>
+
+<span class="sd">    :param text: The input Chinese text to be tokenized, default to None</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :return: The list of Chinese words</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[、．。，：！？『』「」〔〕]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stops</span><span class="p">:</span>
+            <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">terms</span></div>
+
+
+
+<div class="viewcode-block" id="get_sent_terms">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.get_sent_terms">[docs]</a>
+<span class="k">def</span> <span class="nf">get_sent_terms</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determines how to tokenize the input text, based on the global language</span>
+<span class="sd">    setting, either English (&#39;en&#39;) or Traditional Chinese (&#39;chi&#39;).</span>
+
+<span class="sd">    :param text: The input text to be tokenized, default to None</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :return: The list of tokenized words</span>
+<span class="sd">    :rtype: list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">glang</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">chi_sent_terms</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.extract">[docs]</a>
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">testament</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">book</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">chapter</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">verse</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts a subset of the Scripture stored in a DataFrame by testament,</span>
+<span class="sd">    category, or book/chapter/verse.</span>
+
+<span class="sd">    :param df: The collection of the Bible Scripture with columns &#39;book&#39;,</span>
+<span class="sd">        &#39;book_no&#39;, &#39;chapter&#39;, &#39;verse&#39;, &#39;text&#39;, &#39;testament&#39;, &#39;category&#39;,</span>
+<span class="sd">        &#39;cat&#39;, and &#39;cat_no&#39;, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param testament: The prescribed testament to be extracted,</span>
+<span class="sd">        -1 stands for no prescription, 0 for OT, or 1 for NT,</span>
+<span class="sd">        default to -1</span>
+<span class="sd">    :type testament: int, optional</span>
+<span class="sd">    :param category: The prescribed category to be extracted, and</span>
+<span class="sd">        it should be either a full category name or a short name with</span>
+<span class="sd">        3 lower-case letters from a list of 10 categories, default to &#39;&#39;</span>
+<span class="sd">    :type category: str, optional</span>
+<span class="sd">    :param book: The prescribed Bible book to be extracted, and</span>
+<span class="sd">        it should be either a 3-letter short book name or a book number</span>
+<span class="sd">        from 1 to 66, default to 0</span>
+<span class="sd">    :type book: str, int, optional</span>
+<span class="sd">    :param chapter: The prescribed chapter or a tuple indicating the range of</span>
+<span class="sd">        chapters of a Bible book to be extracted, default to 0</span>
+<span class="sd">    :type chapter: int or tuple, optional</span>
+<span class="sd">    :param verse: The prescribed verse or a tuple indicating the range of verses</span>
+<span class="sd">        from a chapter of a Bible book to be extracted, default to 0</span>
+<span class="sd">    :type verse: int or tuple, optional</span>
+<span class="sd">    :return: The subset of the input Scripture, if any, otherwise,</span>
+<span class="sd">        the message &#39;No scripture is extracted!&#39;</span>
+<span class="sd">    :rtype: pandas.DataFrame or str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">no_ret</span> <span class="o">=</span> <span class="s2">&quot;No scripture is extracted!&quot;</span>
+    <span class="n">sub_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>  <span class="c1"># Empty DataFrame</span>
+    <span class="n">isbook</span> <span class="o">=</span> <span class="n">ischapter</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">testament</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">testament</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">testament</span><span class="o">==</span><span class="nb">int</span><span class="p">(</span><span class="n">testament</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">category</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">get_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">):</span>
+            <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">category</span><span class="o">==</span><span class="n">category</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">get_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s1">&#39;cat&#39;</span><span class="p">):</span>
+            <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">cat</span><span class="o">==</span><span class="n">category</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">get_list</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s1">&#39;book&#39;</span><span class="p">):</span>
+        <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">book</span><span class="o">==</span><span class="n">book</span><span class="p">]</span>
+        <span class="n">isbook</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">book</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;</span> <span class="n">book</span> <span class="o">&lt;</span> <span class="mi">67</span><span class="p">:</span>
+            <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">book_no</span><span class="o">==</span><span class="n">book</span><span class="p">]</span>
+            <span class="n">isbook</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">book</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">book</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">book</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">book</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">67</span><span class="p">):</span>
+            <span class="n">sub_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">book_no</span> <span class="o">&gt;=</span> <span class="n">book</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">book_no</span> <span class="o">&lt;=</span> <span class="n">book</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="n">isbook</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">isbook</span> <span class="o">&amp;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sub_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">chapter</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chapter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[</span><span class="n">sub_df</span><span class="o">.</span><span class="n">chapter</span><span class="o">==</span><span class="n">chapter</span><span class="p">]</span>
+            <span class="n">ischapter</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">chapter</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">chapter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">chapter</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">chapter</span> <span class="o">&gt;=</span> <span class="n">chapter</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">chapter</span> <span class="o">&lt;=</span> <span class="n">chapter</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+                <span class="n">ischapter</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">ischapter</span> <span class="o">&amp;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sub_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">verse</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">verse</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[</span><span class="n">sub_df</span><span class="o">.</span><span class="n">verse</span><span class="o">==</span><span class="n">verse</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">verse</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">verse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">verse</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">sub_df</span> <span class="o">=</span> <span class="n">sub_df</span><span class="p">[(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">verse</span> <span class="o">&gt;=</span> <span class="n">verse</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sub_df</span><span class="o">.</span><span class="n">verse</span> <span class="o">&lt;=</span> <span class="n">verse</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sub_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">no_ret</span></div>
+
+
+
+<div class="viewcode-block" id="extract2">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.util.extract2">[docs]</a>
+<span class="k">def</span> <span class="nf">extract2</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracts a subset of the Scripture through a specific filter string by</span>
+<span class="sd">    invoking the function &#39;util.extract&#39;.</span>
+
+<span class="sd">    :param df: The collection of the Bible Scripture, default to None</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+<span class="sd">    :param filter: The prescribed filter string with the format</span>
+<span class="sd">        &#39;&lt;book&gt; &lt;chapter&gt;:&lt;verse&gt;[-&lt;verse2&gt;]&#39; for extracting a range of verses</span>
+<span class="sd">        in the Scripture, default to &#39;&#39;</span>
+<span class="sd">    :type filter: str, optional</span>
+<span class="sd">    :return: The prescribed range of verses from the input Scripture, or</span>
+<span class="sd">        the whole Scripture if the filter string is empty</span>
+<span class="sd">    :rtype: pandas.DataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">chapter</span> <span class="o">=</span> <span class="n">verse</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="nb">filter</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">df</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">filter</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">book</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">chapter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chapter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                        <span class="n">verse</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">verse</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                            <span class="n">verse</span> <span class="o">=</span> <span class="p">(</span><span class="n">verse</span><span class="p">,</span> <span class="mi">999</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">verse</span> <span class="o">=</span> <span class="p">(</span><span class="n">verse</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">extract</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">book</span><span class="o">=</span><span class="n">book</span><span class="p">,</span> <span class="n">chapter</span><span class="o">=</span><span class="n">chapter</span><span class="p">,</span> <span class="n">verse</span><span class="o">=</span><span class="n">verse</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Johnny Cheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CWordTM Package &mdash; CWordTM 0.6.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2bd037f0"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="cwordtm.data Folder" href="cwordtm.data.html" />
+    <link rel="prev" title="CWordTM API Reference" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CWordTM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">CWordTM Package (cwordtm 0.6.1)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CWordTM API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CWordTM Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-folders">Data Folders</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cwordtm.data.html">cwordtm.data Folder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cwordtm.dictionary.html">cwordtm.dictionary Folder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cwordtm.images.html">cwordtm.images Folder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.meta">cwordtm.meta module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.meta.addin"><code class="docutils literal notranslate"><span class="pre">addin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.meta.addin_all"><code class="docutils literal notranslate"><span class="pre">addin_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.meta.addin_all_functions"><code class="docutils literal notranslate"><span class="pre">addin_all_functions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.meta.get_function"><code class="docutils literal notranslate"><span class="pre">get_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.meta.get_module_info"><code class="docutils literal notranslate"><span class="pre">get_module_info()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.pivot">cwordtm.pivot module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.pivot.stat"><code class="docutils literal notranslate"><span class="pre">stat()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.quot">cwordtm.quot module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.quot.extract_quotation"><code class="docutils literal notranslate"><span class="pre">extract_quotation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.quot.match_text"><code class="docutils literal notranslate"><span class="pre">match_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.quot.match_verse"><code class="docutils literal notranslate"><span class="pre">match_verse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.quot.show_quot"><code class="docutils literal notranslate"><span class="pre">show_quot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.quot.tokenize"><code class="docutils literal notranslate"><span class="pre">tokenize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.ta">cwordtm.ta module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.get_sent_scores"><code class="docutils literal notranslate"><span class="pre">get_sent_scores()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.get_sentences"><code class="docutils literal notranslate"><span class="pre">get_sentences()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.get_summary"><code class="docutils literal notranslate"><span class="pre">get_summary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.preprocess_sent"><code class="docutils literal notranslate"><span class="pre">preprocess_sent()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.summary_chi"><code class="docutils literal notranslate"><span class="pre">summary_chi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.ta.summary_en"><code class="docutils literal notranslate"><span class="pre">summary_en()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.tm">cwordtm.tm module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.BTM"><code class="docutils literal notranslate"><span class="pre">BTM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.LDA"><code class="docutils literal notranslate"><span class="pre">LDA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.NMF"><code class="docutils literal notranslate"><span class="pre">NMF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.btm_process"><code class="docutils literal notranslate"><span class="pre">btm_process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.lda_process"><code class="docutils literal notranslate"><span class="pre">lda_process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.load_bible"><code class="docutils literal notranslate"><span class="pre">load_bible()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.load_text"><code class="docutils literal notranslate"><span class="pre">load_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.nmf_process"><code class="docutils literal notranslate"><span class="pre">nmf_process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.tm.process_text"><code class="docutils literal notranslate"><span class="pre">process_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.util">cwordtm.util module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.add_chi_vocab"><code class="docutils literal notranslate"><span class="pre">add_chi_vocab()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.chi_sent_terms"><code class="docutils literal notranslate"><span class="pre">chi_sent_terms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.chi_stops"><code class="docutils literal notranslate"><span class="pre">chi_stops()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.clean_sentences"><code class="docutils literal notranslate"><span class="pre">clean_sentences()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.clean_text"><code class="docutils literal notranslate"><span class="pre">clean_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.extract"><code class="docutils literal notranslate"><span class="pre">extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.extract2"><code class="docutils literal notranslate"><span class="pre">extract2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_diction"><code class="docutils literal notranslate"><span class="pre">get_diction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_diction_chi"><code class="docutils literal notranslate"><span class="pre">get_diction_chi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_diction_en"><code class="docutils literal notranslate"><span class="pre">get_diction_en()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_list"><code class="docutils literal notranslate"><span class="pre">get_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_sent_terms"><code class="docutils literal notranslate"><span class="pre">get_sent_terms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_text"><code class="docutils literal notranslate"><span class="pre">get_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.get_text_list"><code class="docutils literal notranslate"><span class="pre">get_text_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.group_text"><code class="docutils literal notranslate"><span class="pre">group_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.is_chi"><code class="docutils literal notranslate"><span class="pre">is_chi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.load_text"><code class="docutils literal notranslate"><span class="pre">load_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.load_word"><code class="docutils literal notranslate"><span class="pre">load_word()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.preprocess_text"><code class="docutils literal notranslate"><span class="pre">preprocess_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.util.set_lang"><code class="docutils literal notranslate"><span class="pre">set_lang()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.version">cwordtm.version module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__author__"><code class="docutils literal notranslate"><span class="pre">__author__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__copyright__"><code class="docutils literal notranslate"><span class="pre">__copyright__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__credits__"><code class="docutils literal notranslate"><span class="pre">__credits__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__docs__"><code class="docutils literal notranslate"><span class="pre">__docs__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__email__"><code class="docutils literal notranslate"><span class="pre">__email__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__url__"><code class="docutils literal notranslate"><span class="pre">__url__</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.version.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm.viz">cwordtm.viz module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.viz.chi_wordcloud"><code class="docutils literal notranslate"><span class="pre">chi_wordcloud()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.viz.plot_cloud"><code class="docutils literal notranslate"><span class="pre">plot_cloud()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cwordtm.viz.show_wordcloud"><code class="docutils literal notranslate"><span class="pre">show_wordcloud()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cwordtm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CWordTM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CWordTM API Reference</a></li>
+      <li class="breadcrumb-item active">CWordTM Package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/cwordtm.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cwordtm-package">
+<h1>CWordTM Package<a class="headerlink" href="#cwordtm-package" title="Link to this heading"></a></h1>
+<section id="data-folders">
+<h2>Data Folders<a class="headerlink" href="#data-folders" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cwordtm.data.html">cwordtm.data Folder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cwordtm.data.html#overview">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cwordtm.dictionary.html">cwordtm.dictionary Folder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cwordtm.dictionary.html#overview">Overview</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cwordtm.images.html">cwordtm.images Folder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cwordtm.images.html#overview">Overview</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-cwordtm.meta">
+<span id="cwordtm-meta-module"></span><h2>cwordtm.meta module<a class="headerlink" href="#module-cwordtm.meta" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.meta.addin">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.meta.</span></span><span class="sig-name descname"><span class="pre">addin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/meta.html#addin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.meta.addin" title="Link to this definition"></a></dt>
+<dd><p>Adds additional features (showing timing information and source code)
+to a function at runtime. This adds two parameters (‘timing’ &amp; ‘code’) to
+function ‘func’ at runtime. ‘timing’ is a flag indicating whether
+the execution time of the function is shown, and it is default to False.
+‘code’ is an indicator determining if the source code of the function
+‘func’ is shown and/or the function is invoked; ‘0’ indicates the function
+is executed but its source code is not shown, ‘1’ indicates the source code
+of the function is shown after execution, or ‘2’ indicates the source code
+of the function is shown without execution, and it is default to 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>function</em>) – The target function for inserting additiolnal features -
+timing information and showing code, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wrapper function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.meta.addin_all">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.meta.</span></span><span class="sig-name descname"><span class="pre">addin_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cwordtm'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/meta.html#addin_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.meta.addin_all" title="Link to this definition"></a></dt>
+<dd><p>Applies ‘addin’ function to all functions of all sub-modules of
+a module at runtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>modname</strong> (<em>str</em><em>, </em><em>optional</em>) – The target module of which all the functions are inserted
+additional features, default to ‘wordtm’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.meta.addin_all_functions">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.meta.</span></span><span class="sig-name descname"><span class="pre">addin_all_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">submod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/meta.html#addin_all_functions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.meta.addin_all_functions" title="Link to this definition"></a></dt>
+<dd><p>Applies ‘addin’ function to all functions of a module at runtime.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>submod</strong> (<em>module</em>) – The target sub-module of which all the functions are inserted
+additional features, default to None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.meta.get_function">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.meta.</span></span><span class="sig-name descname"><span class="pre">get_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submodules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/meta.html#get_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.meta.get_function" title="Link to this definition"></a></dt>
+<dd><p>Gets the object of the function ‘func_name’ if it belongs
+to one of ‘submodules’ of the current top-level module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mod_name</strong> (<em>str</em>) – The name of the source top-level module, default to None</p></li>
+<li><p><strong>submodules</strong> (<em>list</em>) – The list of names of the sub-modules of the top-level module</p></li>
+<li><p><strong>func_name</strong> (<em>str</em>) – The name of the fuunction to be looked for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The object of the target function, if any, otherwise None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.meta.get_module_info">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.meta.</span></span><span class="sig-name descname"><span class="pre">get_module_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/meta.html#get_module_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.meta.get_module_info" title="Link to this definition"></a></dt>
+<dd><p>Gets the information of the module ‘cwordtm’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>detailed</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether only function signature or
+detailed source code is shown, default to False</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The information of the module ‘cwordtm’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.pivot">
+<span id="cwordtm-pivot-module"></span><h2>cwordtm.pivot module<a class="headerlink" href="#module-cwordtm.pivot" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.pivot.stat">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.pivot.</span></span><span class="sig-name descname"><span class="pre">stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/pivot.html#stat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.pivot.stat" title="Link to this definition"></a></dt>
+<dd><p>Returns a pivot table from the DataFrame ‘df’ storing the input Scripture,
+with columns ‘book’, ‘book_no’, ‘chapter’, ‘verse’, ‘text’, ‘testament’,
+‘category’, ‘cat’, and ‘cat_no’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>chi</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the value is True, assume the input text is in Chinese,
+otherwise, the input text is in English, default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pivot table of the input Scripture grouped by category (‘cat_no’)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.quot">
+<span id="cwordtm-quot-module"></span><h2>cwordtm.quot module<a class="headerlink" href="#module-cwordtm.quot" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.quot.extract_quotation">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.quot.</span></span><span class="sig-name descname"><span class="pre">extract_quotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quot_marks</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/quot.html#extract_quotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.quot.extract_quotation" title="Link to this definition"></a></dt>
+<dd><p>Returns the text within a pair of quotation marks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – The target text to be extracted, default to None</p></li>
+<li><p><strong>quot_marks</strong> (<em>list</em>) – A pair of quotation marks, [‘”’, ‘”’] for English text
+or [’『’, ‘』’] for Chinese text, default to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The text within a pair of quotation marks, if any, otherwise,
+an empty string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.quot.match_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.quot.</span></span><span class="sig-name descname"><span class="pre">match_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/quot.html#match_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.quot.match_text" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of tuples of the cosine similarity measures of the OT verse
+with target verse and the index of that OT verse in the DataFrame storing
+the prescribed OT Scripture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>str</em>) – The target verse to be matched, default to None</p></li>
+<li><p><strong>sent_tokens</strong> (<em>str</em>) – The target verse to be matched, default to None</p></li>
+<li><p><strong>lang</strong> (<em>str</em>) – If the value is ‘chi’ , the processed language is assumed to be
+Chinese, otherwise, it is English, default to None</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – The threshold value of the cosine similarity measure
+between the target verse and an OT verse, where the cosine similarity measure
+of a matched OT verse and the target verse should be greater this value,
+default to None</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – The upper bound of the number of matched verses, default to 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of tuples of the cosine smilarity measure and the index
+of the OT verse</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.quot.match_verse">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.quot.</span></span><span class="sig-name descname"><span class="pre">match_verse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ot_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">otdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">book</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/quot.html#match_verse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.quot.match_verse" title="Link to this definition"></a></dt>
+<dd><p>Returns whether the target NT verse (book, chap, verse) can match a particular verse
+in the list of OT verses (ot_list), and prints the matched OT verse(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – The number of matched verses so far, default to None</p></li>
+<li><p><strong>ot_list</strong> (<em>list</em>) – The list of OT verses (str) to be matched, default to None</p></li>
+<li><p><strong>otdf</strong> (<em>pandas.DataFrame</em>) – The DataFrame storing the prescribed OT verses to be matched,
+default to None</p></li>
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The DataFrame storing the collection of the target NT verses
+to be matched, default to None</p></li>
+<li><p><strong>book</strong> (<em>str</em>) – The Bible book short name (3 characters) of the target NT verse
+to be matched, default to None</p></li>
+<li><p><strong>chap</strong> (<em>int</em>) – The chapter number of the target NT verse to be matched,
+default to None</p></li>
+<li><p><strong>verse</strong> (<em>int</em>) – The verse number of the target NT verse to be matched,
+default to None</p></li>
+<li><p><strong>lang</strong> (<em>str</em>) – If the value is ‘chi’ , the processed language is assumed to be Chinese
+otherwise, it is English, default to None</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – The threshold value of the cosine similarity measure
+between the target verse and an OT verse, where that measure for successful match
+should be greater this value, default to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the target verse matched an OT verse, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.quot.show_quot">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.quot.</span></span><span class="sig-name descname"><span class="pre">show_quot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ot'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/quot.html#show_quot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.quot.show_quot" title="Link to this definition"></a></dt>
+<dd><p>Shows a collection of matched OT verses, if any, based on the prescribed
+collection of target NT verse and the threshold value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>pandas.DataFrame</em>) – The collection of target NT verses to be matched, default to None</p></li>
+<li><p><strong>source</strong> (<em>str</em><em>, </em><em>optional</em>) – The string representing the collection of all or subset of OT verses
+to be matched, default to ‘ot’</p></li>
+<li><p><strong>lang</strong> (<em>str</em><em>, </em><em>optional</em>) – If the value is ‘en’, the processed language is assumed to be English
+otherwise, it is Chinese, default to ‘en</p></li>
+<li><p><strong>threshold</strong> (<em>str</em><em>, </em><em>optional</em>) – The threshold value of the cosine similarity measure
+between the target verse and an OT verse, where that measure for successful match
+should be greater this value, default to 0.5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of tuples of the cosine smilarity measure and the index
+of the OT verse</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.quot.tokenize">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.quot.</span></span><span class="sig-name descname"><span class="pre">tokenize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/quot.html#tokenize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.quot.tokenize" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of tokens from a Chinese sentence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sentence</strong> (<em>str</em>) – The target text to be tokenized, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generator object that storing the list of tokens
+extracted from the sentence</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>generator</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.ta">
+<span id="cwordtm-ta-module"></span><h2>cwordtm.ta module<a class="headerlink" href="#module-cwordtm.ta" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.get_sent_scores">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">get_sent_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_len</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/cwordtm/ta.html#get_sent_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.get_sent_scores" title="Link to this definition"></a></dt>
+<dd><p>Returns the dictionary of a list of sentences with their scores
+computed by their words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentences</strong> (<em>list</em>) – The list of sentences for computing their scores,
+default to None</p></li>
+<li><p><strong>diction</strong> (<em>collections.Counter object</em>) – The dictionary storing the collection of tokenized words
+with their frequencies</p></li>
+<li><p><strong>sent_len</strong> (<em>int</em>) – The upper bound of the number of sentences to be processed,
+default to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of sentences tokenized from the collection of document</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.get_sentences">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">get_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/ta.html#get_sentences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.get_sentences" title="Link to this definition"></a></dt>
+<dd><p>Returns the list of sentences tokenized from the collection of documents (df).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em>) – The input documents storing the Scripture, default to None</p></li>
+<li><p><strong>lang</strong> (<em>str</em><em>, </em><em>optional</em>) – If the value is ‘chi’ , the processed language is assumed to be Chinese
+otherwise, it is English, default to ‘en’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of sentences tokenized from the collection of document</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.get_summary">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">get_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_len</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/ta.html#get_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.get_summary" title="Link to this definition"></a></dt>
+<dd><p>Returns the summary of the collection of sentences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sentences</strong> (<em>list</em>) – The list of target sentences for summarization, default to None</p></li>
+<li><p><strong>sent_weight</strong> (<em>collections.Counter object</em>) – The dictionary of a list of sentences with their scores
+computed by their words</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – The minimum value of sentence weight for extracting that sentence
+as part of the final summary, default to None</p></li>
+<li><p><strong>sent_len</strong> (<em>int</em>) – The upper bound of the number of sentences to be processed,
+default to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of sentences of the extractive summary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.preprocess_sent">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">preprocess_sent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/ta.html#preprocess_sent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.preprocess_sent" title="Link to this definition"></a></dt>
+<dd><p>Preprocesses English text by tokenizing text into sentences of words,
+converting text to lower case, removing stopwords, lemmatize text, and
+tagging text with Part-of-Speech (POS).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to be preprocessed, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of preprocessed and tagged sentences (word, pos)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of tuples (str, str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.summary_chi">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">summary_chi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/ta.html#summary_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.summary_chi" title="Link to this definition"></a></dt>
+<dd><p>Returns an extractive summary of a collection of Chinese sentences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>pandas.Series</em><em> or </em><em>numpy.ndarray</em><em> or </em><em>list</em>) – The collection of target documents for summarization,
+default to None</p></li>
+<li><p><strong>weight</strong> (<em>float</em><em>, </em><em>optional</em>) – The factor to be multiplied to the threshold, which
+determines the sentences as the summary, default to 1.5</p></li>
+<li><p><strong>sent_len</strong> (<em>int</em><em>, </em><em>optional</em>) – The upper bound of the number of sentences to be processed,
+default to 8</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of sentences of the extractive summary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.ta.summary_en">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.ta.</span></span><span class="sig-name descname"><span class="pre">summary_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sent_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/ta.html#summary_en"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.ta.summary_en" title="Link to this definition"></a></dt>
+<dd><p>Returns an extractive summary of a collection of English sentences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>pandas.Series</em><em> or </em><em>numpy.ndarray</em><em> or </em><em>list</em><em> or </em><em>text</em>) – The collection of target documents for summarization,
+default to None</p></li>
+<li><p><strong>sent_len</strong> (<em>int</em><em>, </em><em>optional</em>) – The upper bound of the number of sentences to be processed,
+default to 8</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of sentences of the extractive summary</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.tm">
+<span id="cwordtm-tm-module"></span><h2>cwordtm.tm module<a class="headerlink" href="#module-cwordtm.tm" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">BTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The BTM object for BERTopic modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_topics</strong> (<em>int</em>) – The number of topics to be built from the modeling,
+default to 10</p></li>
+<li><p><strong>textfile</strong> (<em>str</em>) – The filename of the text file to be processed</p></li>
+<li><p><strong>chi</strong> (<em>bool</em>) – The flag indicating whether the processed text is in Chinese or not,
+True stands for Traditional Chinese or False for English</p></li>
+<li><p><strong>num_topics</strong> – The number of topics set for the topic model</p></li>
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of the original documents to be processed</p></li>
+<li><p><strong>pro_docs</strong> (<em>list</em>) – The collection of documents, in form of list of lists of words
+after text preprocessing</p></li>
+<li><p><strong>dictionary</strong> (<em>gensim.corpora.Dictionary</em>) – The dictionary of word ids with their tokenized words
+from preprocessed documents (‘pro_docs’)</p></li>
+<li><p><strong>corpus</strong> (<em>list</em>) – The list of documents, where each document is a list of tuples
+(word id, word frequency in the particular document)</p></li>
+<li><p><strong>model</strong> (<em>bertopic.BERTopic</em>) – The BERTopic model object</p></li>
+<li><p><strong>embed</strong> (<em>bool</em>) – The flag indicating whether the BERTopic model is trained
+with the BERT pretrained model</p></li>
+<li><p><strong>bmodel</strong> (<em>transformers.BertModel</em>) – The BERT pretrained model</p></li>
+<li><p><strong>bt_vectorizer</strong> (<em>sklearn.feature_extraction.text.CountVectorizer</em>) – The vectorizer extracted from the BERTopic model
+for model evaluation</p></li>
+<li><p><strong>bt_analyzer</strong> (<em>functools.partial</em>) – The analyzer extracted from the BERTopic model
+for model evaluation</p></li>
+<li><p><strong>cleaned_docs</strong> (<em>list</em>) – The list of documents (string) built by grouping
+the original documents by the topics created from the BERTopic model</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cwordtm.tm',</span> <span class="pre">'__doc__':</span> <span class="pre">&quot;The</span> <span class="pre">BTM</span> <span class="pre">object</span> <span class="pre">for</span> <span class="pre">BERTopic</span> <span class="pre">modeling.\n\n</span>&#160;&#160;&#160; <span class="pre">:cvar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">built</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">modeling,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">default</span> <span class="pre">to</span> <span class="pre">10\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">textfile:</span> <span class="pre">The</span> <span class="pre">filename</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">text</span> <span class="pre">file</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">textfile:</span> <span class="pre">str\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">chi:</span> <span class="pre">The</span> <span class="pre">flag</span> <span class="pre">indicating</span> <span class="pre">whether</span> <span class="pre">the</span> <span class="pre">processed</span> <span class="pre">text</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">not,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">True</span> <span class="pre">stands</span> <span class="pre">for</span> <span class="pre">Traditional</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">False</span> <span class="pre">for</span> <span class="pre">English\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">chi:</span> <span class="pre">bool\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">set</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">topic</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">documents</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">docs:</span> <span class="pre">pandas.DataFrame</span> <span class="pre">or</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">pro_docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">in</span> <span class="pre">form</span> <span class="pre">of</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">lists</span> <span class="pre">of</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">after</span> <span class="pre">text</span> <span class="pre">preprocessing\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">pro_docs:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">dictionary:</span> <span class="pre">The</span> <span class="pre">dictionary</span> <span class="pre">of</span> <span class="pre">word</span> <span class="pre">ids</span> <span class="pre">with</span> <span class="pre">their</span> <span class="pre">tokenized</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">from</span> <span class="pre">preprocessed</span> <span class="pre">documents</span> <span class="pre">('pro_docs')\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">dictionary:</span> <span class="pre">gensim.corpora.Dictionary\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">corpus:</span> <span class="pre">The</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">where</span> <span class="pre">each</span> <span class="pre">document</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">tuples\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(word</span> <span class="pre">id,</span> <span class="pre">word</span> <span class="pre">frequency</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">particular</span> <span class="pre">document)\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">corpus:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">model:</span> <span class="pre">The</span> <span class="pre">BERTopic</span> <span class="pre">model</span> <span class="pre">object\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">model:</span> <span class="pre">bertopic.BERTopic\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">embed:</span> <span class="pre">The</span> <span class="pre">flag</span> <span class="pre">indicating</span> <span class="pre">whether</span> <span class="pre">the</span> <span class="pre">BERTopic</span> <span class="pre">model</span> <span class="pre">is</span> <span class="pre">trained\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">with</span> <span class="pre">the</span> <span class="pre">BERT</span> <span class="pre">pretrained</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">embed:</span> <span class="pre">bool\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">bmodel:</span> <span class="pre">The</span> <span class="pre">BERT</span> <span class="pre">pretrained</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">bmodel:</span> <span class="pre">transformers.BertModel\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">bt_vectorizer:</span> <span class="pre">The</span> <span class="pre">vectorizer</span> <span class="pre">extracted</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">BERTopic</span> <span class="pre">model\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">for</span> <span class="pre">model</span> <span class="pre">evaluation\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">bt_vectorizer:</span> <span class="pre">sklearn.feature_extraction.text.CountVectorizer\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">bt_analyzer:</span> <span class="pre">The</span> <span class="pre">analyzer</span> <span class="pre">extracted</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">BERTopic</span> <span class="pre">model\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">for</span> <span class="pre">model</span> <span class="pre">evaluation\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">bt_analyzer:</span> <span class="pre">functools.partial\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">cleaned_docs:</span> <span class="pre">The</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">documents</span> <span class="pre">(string)</span> <span class="pre">built</span> <span class="pre">by</span> <span class="pre">grouping\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">the</span> <span class="pre">original</span> <span class="pre">documents</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">topics</span> <span class="pre">created</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">BERTopic</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">cleaned_docs:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">&quot;,</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.__init__&gt;,</span> <span class="pre">'preprocess':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.preprocess&gt;,</span> <span class="pre">'preprocess_chi':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.preprocess_chi&gt;,</span> <span class="pre">'fit':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.fit&gt;,</span> <span class="pre">'fit_chi':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.fit_chi&gt;,</span> <span class="pre">'show_topics':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.show_topics&gt;,</span> <span class="pre">'pre_evaluate':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.pre_evaluate&gt;,</span> <span class="pre">'evaluate':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.evaluate&gt;,</span> <span class="pre">'viz':</span> <span class="pre">&lt;function</span> <span class="pre">BTM.viz&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'BTM'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'BTM'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cwordtm.tm.BTM.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor method.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cwordtm.tm'</span></em><a class="headerlink" href="#cwordtm.tm.BTM.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cwordtm.tm.BTM.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Computes and outputs the coherence score.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.fit" title="Link to this definition"></a></dt>
+<dd><p>Build the BERTopic model for English text with the created corpus
+and dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.fit_chi">
+<span class="sig-name descname"><span class="pre">fit_chi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.fit_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.fit_chi" title="Link to this definition"></a></dt>
+<dd><p>Build the BERTopic model for Chinese text with the created corpus
+and dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.pre_evaluate">
+<span class="sig-name descname"><span class="pre">pre_evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.pre_evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.pre_evaluate" title="Link to this definition"></a></dt>
+<dd><p>Prepare the original documents per built topic for model evaluation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.preprocess" title="Link to this definition"></a></dt>
+<dd><p>Process the original English documents (cwordtm.tm.BTM.docs)
+by invoking cwordtm.tm.process_text, and build a dictionary and
+a corpus from the preprocessed documents for the BERTopic model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.preprocess_chi">
+<span class="sig-name descname"><span class="pre">preprocess_chi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.preprocess_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.preprocess_chi" title="Link to this definition"></a></dt>
+<dd><p>Process the original Chinese documents (cwordtm.tm.BTM.docs)
+by tokenizing text, removing stopwords, and building a dictionary
+and a corpus from the preprocessed documents for the BERTopic model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.show_topics">
+<span class="sig-name descname"><span class="pre">show_topics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.show_topics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.show_topics" title="Link to this definition"></a></dt>
+<dd><p>Shows the topics with their keywords from the built BERTopic model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.BTM.viz">
+<span class="sig-name descname"><span class="pre">viz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#BTM.viz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.BTM.viz" title="Link to this definition"></a></dt>
+<dd><p>Visualize the built BERTopic model through Intertopic Distance Map,
+Topic Word Score Charts, and Topic Similarity Matrix.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">LDA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The LDA object for Latent Dirichlet Allocation (LDA) modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_topics</strong> (<em>int</em>) – The number of topics to be built from the modeling,
+default to 10.</p></li>
+<li><p><strong>textfile</strong> (<em>str</em>) – The filename of the text file to be processed</p></li>
+<li><p><strong>chi</strong> (<em>bool</em>) – The flag indicating whether the processed text is in Chinese or not,
+True stands for Traditional Chinese or False for English</p></li>
+<li><p><strong>num_topics</strong> – The number of topics set for the topic model</p></li>
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of the original documents to be processed</p></li>
+<li><p><strong>pro_docs</strong> (<em>list</em>) – The collection of documents, in form of list of lists of words
+after text preprocessing</p></li>
+<li><p><strong>dictionary</strong> (<em>gensim.corpora.Dictionary</em>) – The dictionary of word ids with their tokenized words
+from preprocessed documents (‘pro_docs’)</p></li>
+<li><p><strong>corpus</strong> (<em>list</em>) – The list of documents, where each document is a list of tuples
+(word id, word frequency in the particular document)</p></li>
+<li><p><strong>model</strong> (<em>gensim.models.LdaModel</em>) – The LDA model object</p></li>
+<li><p><strong>vis_data</strong> (<em>pyLDAvis.PreparedData</em>) – The LDA model’s prepared data for visualization</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cwordtm.tm',</span> <span class="pre">'__doc__':</span> <span class="pre">&quot;The</span> <span class="pre">LDA</span> <span class="pre">object</span> <span class="pre">for</span> <span class="pre">Latent</span> <span class="pre">Dirichlet</span> <span class="pre">Allocation</span> <span class="pre">(LDA)</span> <span class="pre">modeling.\n</span>&#160;&#160;&#160; <span class="pre">\n</span>&#160;&#160;&#160; <span class="pre">:cvar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">built</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">modeling,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">default</span> <span class="pre">to</span> <span class="pre">10.\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">textfile:</span> <span class="pre">The</span> <span class="pre">filename</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">text</span> <span class="pre">file</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">textfile:</span> <span class="pre">str\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">chi:</span> <span class="pre">The</span> <span class="pre">flag</span> <span class="pre">indicating</span> <span class="pre">whether</span> <span class="pre">the</span> <span class="pre">processed</span> <span class="pre">text</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">not,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">True</span> <span class="pre">stands</span> <span class="pre">for</span> <span class="pre">Traditional</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">False</span> <span class="pre">for</span> <span class="pre">English\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">chi:</span> <span class="pre">bool\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">set</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">topic</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">documents</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">docs:</span> <span class="pre">pandas.DataFrame</span> <span class="pre">or</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">pro_docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">in</span> <span class="pre">form</span> <span class="pre">of</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">lists</span> <span class="pre">of</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">after</span> <span class="pre">text</span> <span class="pre">preprocessing\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">pro_docs:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">dictionary:</span> <span class="pre">The</span> <span class="pre">dictionary</span> <span class="pre">of</span> <span class="pre">word</span> <span class="pre">ids</span> <span class="pre">with</span> <span class="pre">their</span> <span class="pre">tokenized</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">from</span> <span class="pre">preprocessed</span> <span class="pre">documents</span> <span class="pre">('pro_docs')\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">dictionary:</span> <span class="pre">gensim.corpora.Dictionary\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">corpus:</span> <span class="pre">The</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">where</span> <span class="pre">each</span> <span class="pre">document</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">tuples\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(word</span> <span class="pre">id,</span> <span class="pre">word</span> <span class="pre">frequency</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">particular</span> <span class="pre">document)\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">corpus:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">model:</span> <span class="pre">The</span> <span class="pre">LDA</span> <span class="pre">model</span> <span class="pre">object\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">model:</span> <span class="pre">gensim.models.LdaModel\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">vis_data:</span> <span class="pre">The</span> <span class="pre">LDA</span> <span class="pre">model's</span> <span class="pre">prepared</span> <span class="pre">data</span> <span class="pre">for</span> <span class="pre">visualization\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">vis_data:</span> <span class="pre">pyLDAvis.PreparedData\n</span>&#160;&#160;&#160; <span class="pre">&quot;,</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.__init__&gt;,</span> <span class="pre">'preprocess':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.preprocess&gt;,</span> <span class="pre">'preprocess_chi':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.preprocess_chi&gt;,</span> <span class="pre">'fit':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.fit&gt;,</span> <span class="pre">'viz':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.viz&gt;,</span> <span class="pre">'show_topics':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.show_topics&gt;,</span> <span class="pre">'evaluate':</span> <span class="pre">&lt;function</span> <span class="pre">LDA.evaluate&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'LDA'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'LDA'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cwordtm.tm.LDA.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor method.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cwordtm.tm'</span></em><a class="headerlink" href="#cwordtm.tm.LDA.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cwordtm.tm.LDA.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Computes and outputs the coherence score, perplexity, topic diversity,
+and topic size distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.fit" title="Link to this definition"></a></dt>
+<dd><p>Build the LDA model with the created corpus and dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.preprocess" title="Link to this definition"></a></dt>
+<dd><p>Process the original English documents (cwordtm.tm.LDA.docs)
+by invoking cwordtm.tm.process_text, and build a dictionary and
+a corpus from the preprocessed documents for the LDA model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.preprocess_chi">
+<span class="sig-name descname"><span class="pre">preprocess_chi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.preprocess_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.preprocess_chi" title="Link to this definition"></a></dt>
+<dd><p>Process the original Chinese documents (cwordtm.tm.LDA.docs)
+by tokenizing text, removing stopwords, and building a dictionary
+and a corpus from the preprocessed documents for the LDA model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.show_topics">
+<span class="sig-name descname"><span class="pre">show_topics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.show_topics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.show_topics" title="Link to this definition"></a></dt>
+<dd><p>Shows the topics with their keywords from the built LDA model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.LDA.viz">
+<span class="sig-name descname"><span class="pre">viz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#LDA.viz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.LDA.viz" title="Link to this definition"></a></dt>
+<dd><p>Shows the Intertopic Distance Map for the built LDA model.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">NMF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The NMF object for Non-negative Matrix Factorization (NMF) modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_topics</strong> (<em>int</em>) – The number of topics to be built from the modeling,
+default to 10.</p></li>
+<li><p><strong>textfile</strong> (<em>str</em>) – The filename of the text file to be processed</p></li>
+<li><p><strong>chi</strong> (<em>bool</em>) – The flag indicating whether the processed text is in Chinese or not,
+True stands for Traditional Chinese or False for English</p></li>
+<li><p><strong>num_topics</strong> – The number of topics set for the topic model</p></li>
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of the original documents to be processed</p></li>
+<li><p><strong>pro_docs</strong> (<em>list</em>) – The collection of documents, in form of list of lists of words
+after text preprocessing</p></li>
+<li><p><strong>dictionary</strong> (<em>gensim.corpora.Dictionary</em>) – The dictionary of word ids with their tokenized words
+from preprocessed documents (‘pro_docs’)</p></li>
+<li><p><strong>corpus</strong> (<em>list</em>) – The list of documents, where each document is a list of tuples
+(word id, word frequency in the particular document)</p></li>
+<li><p><strong>model</strong> (<em>gensim.models.Nmf</em>) – The NMF model object</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.__dict__">
+<span class="sig-name descname"><span class="pre">__dict__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">mappingproxy({'__module__':</span> <span class="pre">'cwordtm.tm',</span> <span class="pre">'__doc__':</span> <span class="pre">&quot;The</span> <span class="pre">NMF</span> <span class="pre">object</span> <span class="pre">for</span> <span class="pre">Non-negative</span> <span class="pre">Matrix</span> <span class="pre">Factorization</span> <span class="pre">(NMF)</span> <span class="pre">modeling.\n\n</span>&#160;&#160;&#160; <span class="pre">:cvar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">built</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">modeling,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">default</span> <span class="pre">to</span> <span class="pre">10.\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">textfile:</span> <span class="pre">The</span> <span class="pre">filename</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">text</span> <span class="pre">file</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">textfile:</span> <span class="pre">str\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">chi:</span> <span class="pre">The</span> <span class="pre">flag</span> <span class="pre">indicating</span> <span class="pre">whether</span> <span class="pre">the</span> <span class="pre">processed</span> <span class="pre">text</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">not,\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">True</span> <span class="pre">stands</span> <span class="pre">for</span> <span class="pre">Traditional</span> <span class="pre">Chinese</span> <span class="pre">or</span> <span class="pre">False</span> <span class="pre">for</span> <span class="pre">English\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">chi:</span> <span class="pre">bool\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">num_topics:</span> <span class="pre">The</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">topics</span> <span class="pre">set</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">topic</span> <span class="pre">model\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">num_topics:</span> <span class="pre">int\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">original</span> <span class="pre">documents</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">processed\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">docs:</span> <span class="pre">pandas.DataFrame</span> <span class="pre">or</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">pro_docs:</span> <span class="pre">The</span> <span class="pre">collection</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">in</span> <span class="pre">form</span> <span class="pre">of</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">lists</span> <span class="pre">of</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">after</span> <span class="pre">text</span> <span class="pre">preprocessing\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">pro_docs:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">dictionary:</span> <span class="pre">The</span> <span class="pre">dictionary</span> <span class="pre">of</span> <span class="pre">word</span> <span class="pre">ids</span> <span class="pre">with</span> <span class="pre">their</span> <span class="pre">tokenized</span> <span class="pre">words\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">from</span> <span class="pre">preprocessed</span> <span class="pre">documents</span> <span class="pre">('pro_docs')\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">dictionary:</span> <span class="pre">gensim.corpora.Dictionary\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">corpus:</span> <span class="pre">The</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">documents,</span> <span class="pre">where</span> <span class="pre">each</span> <span class="pre">document</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">list</span> <span class="pre">of</span> <span class="pre">tuples\n</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(word</span> <span class="pre">id,</span> <span class="pre">word</span> <span class="pre">frequency</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">particular</span> <span class="pre">document)\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">corpus:</span> <span class="pre">list\n</span>&#160;&#160;&#160; <span class="pre">:ivar</span> <span class="pre">model:</span> <span class="pre">The</span> <span class="pre">NMF</span> <span class="pre">model</span> <span class="pre">object\n</span>&#160;&#160;&#160; <span class="pre">:vartype</span> <span class="pre">model:</span> <span class="pre">gensim.models.Nmf\n</span>&#160;&#160;&#160; <span class="pre">&quot;,</span> <span class="pre">'__init__':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.__init__&gt;,</span> <span class="pre">'preprocess':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.preprocess&gt;,</span> <span class="pre">'preprocess_chi':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.preprocess_chi&gt;,</span> <span class="pre">'fit':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.fit&gt;,</span> <span class="pre">'show_topics_words':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.show_topics_words&gt;,</span> <span class="pre">'evaluate':</span> <span class="pre">&lt;function</span> <span class="pre">NMF.evaluate&gt;,</span> <span class="pre">'__dict__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__dict__'</span> <span class="pre">of</span> <span class="pre">'NMF'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__weakref__':</span> <span class="pre">&lt;attribute</span> <span class="pre">'__weakref__'</span> <span class="pre">of</span> <span class="pre">'NMF'</span> <span class="pre">objects&gt;,</span> <span class="pre">'__annotations__':</span> <span class="pre">{}})</span></em><a class="headerlink" href="#cwordtm.tm.NMF.__dict__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.__init__" title="Link to this definition"></a></dt>
+<dd><p>Constructor method.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.__module__">
+<span class="sig-name descname"><span class="pre">__module__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cwordtm.tm'</span></em><a class="headerlink" href="#cwordtm.tm.NMF.__module__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#cwordtm.tm.NMF.__weakref__" title="Link to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.evaluate" title="Link to this definition"></a></dt>
+<dd><p>Computes and outputs the coherence score, topic diversity,
+and topic size distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.fit" title="Link to this definition"></a></dt>
+<dd><p>Build the NMF model with the created corpus and dictionary.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.preprocess">
+<span class="sig-name descname"><span class="pre">preprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.preprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.preprocess" title="Link to this definition"></a></dt>
+<dd><p>Process the original English documents (cwordtm.tm.NMF.docs)
+by invoking cwordtm.tm.process_text, and build a dictionary
+and a corpus from the preprocessed documents for the NMF model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.preprocess_chi">
+<span class="sig-name descname"><span class="pre">preprocess_chi</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.preprocess_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.preprocess_chi" title="Link to this definition"></a></dt>
+<dd><p>Process the original Chinese documents (cwordtm.tm.NMF.docs)
+by tokenizing text, removing stopwords, and building a dictionary
+and a corpus from the preprocessed documents for the NMF model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cwordtm.tm.NMF.show_topics_words">
+<span class="sig-name descname"><span class="pre">show_topics_words</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#NMF.show_topics_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.NMF.show_topics_words" title="Link to this definition"></a></dt>
+<dd><p>Shows the topics with their keywords from the built NMF model.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.btm_process">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">btm_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#btm_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.btm_process" title="Link to this definition"></a></dt>
+<dd><p>Pipelines the BERTopic modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_file</strong> (<em>str</em>) – The filename of the prescribed text file to be loaded,
+default to None</p></li>
+<li><p><strong>source</strong> (<em>int</em><em>, </em><em>optional</em>) – The source of the prescribed document file (‘doc_file’),
+where 0 refers to internal store of the package and 1 to external file,
+default to 0</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+<li><p><strong>cat</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The category indicating a subset of the Scripture to be loaded, where
+0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories
+[‘tor’, ‘oth’, ‘ket’, ‘map’, ‘mip’, ‘gos’, ‘nth’, ‘pau’, ‘epi’, ‘apo’] (See
+the package’s internal file ‘data/book_cat.csv’), default to 0</p></li>
+<li><p><strong>chi</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the text is processed as Chinese (True)
+or English (False), default to False</p></li>
+<li><p><strong>group</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the loaded text is grouped by chapter,
+default to True</p></li>
+<li><p><strong>eval</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the model evaluation results will be shown,
+default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pipelined BTM</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>cwordtm.tm.BTM object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.lda_process">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">lda_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#lda_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.lda_process" title="Link to this definition"></a></dt>
+<dd><p>Pipelines the LDA modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_file</strong> (<em>str</em>) – The filename of the prescribed text file to be loaded,
+default to None</p></li>
+<li><p><strong>source</strong> (<em>int</em><em>, </em><em>optional</em>) – The source of the prescribed document file (‘doc_file’),
+where 0 refers to internal store of the package and 1 to external file,
+default to 0</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+<li><p><strong>cat</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The category indicating a subset of the Scripture to be loaded, where
+0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories
+[‘tor’, ‘oth’, ‘ket’, ‘map’, ‘mip’, ‘gos’, ‘nth’, ‘pau’, ‘epi’, ‘apo’] (See
+the package’s internal file ‘data/book_cat.csv’), default to 0</p></li>
+<li><p><strong>chi</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the text is processed as Chinese (True)
+or English (False), default to False</p></li>
+<li><p><strong>group</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the loaded text is grouped by chapter,
+default to True</p></li>
+<li><p><strong>eval</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the model evaluation results will be shown,
+default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pipelined LDA</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>cwordtm.tm.LDA object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.load_bible">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">load_bible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#load_bible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.load_bible" title="Link to this definition"></a></dt>
+<dd><p>Loads and returns the Bible Scripture from the prescribed internal
+file (‘textfile’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>textfile</strong> (<em>str</em>) – The package’s internal Bible text from which the text is loaded,
+either World English Bible (‘web.csv’) or Chinese Union Version (Traditional)
+(‘cuv.csv’), default to None</p></li>
+<li><p><strong>cat</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The category indicating a subset of the Scripture to be loaded, where
+0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories
+[‘tor’, ‘oth’, ‘ket’, ‘map’, ‘mip’, ‘gos’, ‘nth’, ‘pau’, ‘epi’, ‘apo’] (See
+the package’s internal file ‘data/book_cat.csv’), default to 0</p></li>
+<li><p><strong>group</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the loaded text is grouped by chapter,
+default to True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The collection of Scripture loaded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.load_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">load_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">textfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#load_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.load_text" title="Link to this definition"></a></dt>
+<dd><p>Loads and returns the list of documents from the prescribed file (‘textfile’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>textfile</strong> (<em>str</em>) – The prescribed text file from which the text is loaded,
+default to None</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of documents loaded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.nmf_process">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">nmf_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#nmf_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.nmf_process" title="Link to this definition"></a></dt>
+<dd><p>Pipelines the NMF modeling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc_file</strong> (<em>str</em>) – The filename of the prescribed text file to be loaded,
+default to None</p></li>
+<li><p><strong>source</strong> (<em>int</em><em>, </em><em>optional</em>) – The source of the prescribed document file (‘doc_file’),
+where 0 refers to internal store of the package and 1 to external file,
+default to 0</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+<li><p><strong>cat</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The category indicating a subset of the Scripture to be loaded, where
+0 stands for the whole Bible, 1 for OT, 2 for NT, or one of the ten categories
+[‘tor’, ‘oth’, ‘ket’, ‘map’, ‘mip’, ‘gos’, ‘nth’, ‘pau’, ‘epi’, ‘apo’] (See
+the package’s internal file ‘data/book_cat.csv’), default to 0</p></li>
+<li><p><strong>chi</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the text is processed as Chinese (True)
+or English (False), default to False</p></li>
+<li><p><strong>group</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the loaded text is grouped by chapter,
+default to True</p></li>
+<li><p><strong>eval</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag indicating whether the model evaluation results will be shown,
+default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pipelined NMF</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>cwordtm.tm.NMF object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.tm.process_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.tm.</span></span><span class="sig-name descname"><span class="pre">process_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/tm.html#process_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.tm.process_text" title="Link to this definition"></a></dt>
+<dd><p>Processes the English text through tokenization, converting to lower case,
+removing all digits, stemming, and removing punctuations and stopwords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>doc</strong> (<em>str</em>) – The prescribed text, in form of a string, to be processed,
+default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of the processed strings</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.util">
+<span id="cwordtm-util-module"></span><h2>cwordtm.util module<a class="headerlink" href="#module-cwordtm.util" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.add_chi_vocab">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">add_chi_vocab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#add_chi_vocab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.add_chi_vocab" title="Link to this definition"></a></dt>
+<dd><p>Loads the Chinese Bible vocabulary from the internal file ‘bible_vocab.txt’,
+and adds to the Jieba word list for future tokenization</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.chi_sent_terms">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">chi_sent_terms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#chi_sent_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.chi_sent_terms" title="Link to this definition"></a></dt>
+<dd><p>Returns the list of Chinese words tokenized from the input text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The input Chinese text to be tokenized, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of Chinese words</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.chi_stops">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">chi_stops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#chi_stops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.chi_stops" title="Link to this definition"></a></dt>
+<dd><p>Loads the common Chinese (Traditional) vocabulary to Jieba for
+future tokenization, and the Chinese stopwords for future
+wordcloud plotting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of stopwords for wordcloud plotting</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.clean_sentences">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">clean_sentences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentences</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#clean_sentences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.clean_sentences" title="Link to this definition"></a></dt>
+<dd><p>Cleans the list of sentences by invoking the function preprocess_text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sentences</strong> (<em>list</em>) – The list of sentences to be cleaned, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of cleaned sentences</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.clean_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">clean_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#clean_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.clean_text" title="Link to this definition"></a></dt>
+<dd><p>Cleans the text from the Scripture stored in the DataFrame ‘df’,
+by removing all digits, replacing newline by a space, removing
+English stopwords, converting all characters to lower case, and
+removing all characters except alphanumeric and whitespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cleaned text in a DataFrame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.extract">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testament</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">book</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chapter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.extract" title="Link to this definition"></a></dt>
+<dd><p>Extracts a subset of the Scripture stored in a DataFrame by testament,
+category, or book/chapter/verse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The collection of the Bible Scripture with columns ‘book’,
+‘book_no’, ‘chapter’, ‘verse’, ‘text’, ‘testament’, ‘category’,
+‘cat’, and ‘cat_no’, default to None</p></li>
+<li><p><strong>testament</strong> (<em>int</em><em>, </em><em>optional</em>) – The prescribed testament to be extracted,
+-1 stands for no prescription, 0 for OT, or 1 for NT,
+default to -1</p></li>
+<li><p><strong>category</strong> (<em>str</em><em>, </em><em>optional</em>) – The prescribed category to be extracted, and
+it should be either a full category name or a short name with
+3 lower-case letters from a list of 10 categories, default to ‘’</p></li>
+<li><p><strong>book</strong> (<em>str</em><em>, </em><em>int</em><em>, </em><em>optional</em>) – The prescribed Bible book to be extracted, and
+it should be either a 3-letter short book name or a book number
+from 1 to 66, default to 0</p></li>
+<li><p><strong>chapter</strong> (<em>int</em><em> or </em><em>tuple</em><em>, </em><em>optional</em>) – The prescribed chapter or a tuple indicating the range of
+chapters of a Bible book to be extracted, default to 0</p></li>
+<li><p><strong>verse</strong> (<em>int</em><em> or </em><em>tuple</em><em>, </em><em>optional</em>) – The prescribed verse or a tuple indicating the range of verses
+from a chapter of a Bible book to be extracted, default to 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The subset of the input Scripture, if any, otherwise,
+the message ‘No scripture is extracted!’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame or str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.extract2">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">extract2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#extract2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.extract2" title="Link to this definition"></a></dt>
+<dd><p>Extracts a subset of the Scripture through a specific filter string by
+invoking the function ‘util.extract’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The collection of the Bible Scripture, default to None</p></li>
+<li><p><strong>filter</strong> (<em>str</em><em>, </em><em>optional</em>) – The prescribed filter string with the format
+‘&lt;book&gt; &lt;chapter&gt;:&lt;verse&gt;[-&lt;verse2&gt;]’ for extracting a range of verses
+in the Scripture, default to ‘’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The prescribed range of verses from the input Scripture, or
+the whole Scripture if the filter string is empty</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_diction">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_diction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_diction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_diction" title="Link to this definition"></a></dt>
+<dd><p>Determines which is the target language, English or Chinese,
+in order to build a dictionary of words with their frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of documents, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dictionary of words with their frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_diction_chi">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_diction_chi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_diction_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_diction_chi" title="Link to this definition"></a></dt>
+<dd><p>Tokenizes the collection of Chinese documents and builds a dictionary
+of words with their frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of documents, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dictionary of words with their frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_diction_en">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_diction_en</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_diction_en"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_diction_en" title="Link to this definition"></a></dt>
+<dd><p>Tokenizes the collection of English documents and builds a dictionary
+of words with their frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>docs</strong> (<em>pandas.DataFrame</em><em> or </em><em>list</em>) – The collection of text, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dictionary of words with their frequencies</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_list">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'book'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_list" title="Link to this definition"></a></dt>
+<dd><p>Extracts and returns the prescribed column from the Scripture
+stored in the DataFrame ‘df’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>column</strong> (<em>str</em><em>, </em><em>optional</em>) – The column by which the Scriture is grouped, default to ‘book’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The grouped Scripture</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_sent_terms">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_sent_terms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_sent_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_sent_terms" title="Link to this definition"></a></dt>
+<dd><p>Determines how to tokenize the input text, based on the global language
+setting, either English (‘en’) or Traditional Chinese (‘chi’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The input text to be tokenized, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of tokenized words</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_text" title="Link to this definition"></a></dt>
+<dd><p>Extracts and returns the text from the Scripture
+stored in the DataFrame ‘df’ after joining the list of text into a string
+and removing all the ideographic spaces (’　‘) from the text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted text</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.get_text_list">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">get_text_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'text'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#get_text_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.get_text_list" title="Link to this definition"></a></dt>
+<dd><p>Extracts and returns the list of text from the Scripture
+stored in the DataFrame ‘df’ after removing all the ideographic spaces
+(’　‘) from the text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>text_col</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the text column to be extracted, default to ‘text’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The extracted text</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.group_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">group_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chapter'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#group_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.group_text" title="Link to this definition"></a></dt>
+<dd><p>Groups the Bible Scripture in the DataFrame ‘df’ by the prescribed column, and
+‘df’ should include columns ‘book’, ‘book_no’, ‘chapter’, ‘verse’, ‘text’,
+‘testament’, ‘category’, ‘cat’, and ‘cat_no’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – The input DataFrame storing the Scripture, default to None</p></li>
+<li><p><strong>column</strong> (<em>str</em><em>, </em><em>optional</em>) – The column by which the Scriture is grouped, default to ‘chapter’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The grouped Scripture</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.is_chi">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">is_chi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#is_chi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.is_chi" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the Chinese language flag is set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the Chinese language flag (chi_flag) is set,
+False otherwise</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.load_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">load_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#load_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.load_text" title="Link to this definition"></a></dt>
+<dd><p>Loads and returns the text from the prescribed file path (‘filepath’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The prescribed filepath from which the text is loaded,
+default to None</p></li>
+<li><p><strong>nr</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of rows of text to be loaded; 0 represents all rows,
+default to 0</p></li>
+<li><p><strong>info</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag whether the dataset information is shown,
+default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The collection of text with the prescribed number of rows loaded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.load_word">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">load_word</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'web.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#load_word"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.load_word" title="Link to this definition"></a></dt>
+<dd><p>Loads and returns the text from the prescribed internal file (‘ver’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ver</strong> (<em>str</em><em>, </em><em>optional</em>) – The package’s internal Bible text from which the text is loaded,
+either World English Bible (‘web.csv’) or Chinese Union Version
+(Traditional)(‘cuv.csv’), default to ‘web.csv’</p></li>
+<li><p><strong>nr</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of rows of Scripture to be loaded; 0 represents all rows,
+default to 0</p></li>
+<li><p><strong>info</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag whether the dataset information is shown,
+default to False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The collection of Scripture with the prescribed number of rows loaded</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.preprocess_text">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">preprocess_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#preprocess_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.preprocess_text" title="Link to this definition"></a></dt>
+<dd><p>Preprocesses English text by converting text to lower case, removing
+special characters and digits, removing punctuations, removing stopwords,
+removing short words, and Lemmatize text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The text to be preprocessed, default to None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The preprocessed text</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.util.set_lang">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.util.</span></span><span class="sig-name descname"><span class="pre">set_lang</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'en'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/util.html#set_lang"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.util.set_lang" title="Link to this definition"></a></dt>
+<dd><p>Sets the prescribed language (English or Chinese (Traditional))
+for further text processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lang</strong> (<em>str</em><em>, </em><em>optional</em>) – The prescribed language for text processing, where
+‘en’ stands for English or ‘chi’ for Traditonal Chinese,
+default to ‘en’</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.version">
+<span id="cwordtm-version-module"></span><h2>cwordtm.version module<a class="headerlink" href="#module-cwordtm.version" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__author__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__author__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Johnny</span> <span class="pre">Cheng'</span></em><a class="headerlink" href="#cwordtm.version.__author__" title="Link to this definition"></a></dt>
+<dd><p>Name of the author of the package</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__copyright__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__copyright__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Copyright</span> <span class="pre">(c)</span> <span class="pre">2024</span> <span class="pre">-</span> <span class="pre">Johnny</span> <span class="pre">Cheng'</span></em><a class="headerlink" href="#cwordtm.version.__copyright__" title="Link to this definition"></a></dt>
+<dd><p>Copyright information</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__credits__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__credits__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Jehovah,</span> <span class="pre">the</span> <span class="pre">Lord']</span></em><a class="headerlink" href="#cwordtm.version.__credits__" title="Link to this definition"></a></dt>
+<dd><p>Credit information</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__docs__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__docs__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://cwordtm.readthedocs.io'</span></em><a class="headerlink" href="#cwordtm.version.__docs__" title="Link to this definition"></a></dt>
+<dd><p>Package documentation on “Read the Docs” website</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__email__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__email__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'drjohnnycheng&#64;gmail.com'</span></em><a class="headerlink" href="#cwordtm.version.__email__" title="Link to this definition"></a></dt>
+<dd><p>Author’s email address</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__url__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__url__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://github.com/drjohnnycheng/cwordtm.git'</span></em><a class="headerlink" href="#cwordtm.version.__url__" title="Link to this definition"></a></dt>
+<dd><p>GitHub repository for the package</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="cwordtm.version.__version__">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.version.</span></span><span class="sig-name descname"><span class="pre">__version__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.6.1'</span></em><a class="headerlink" href="#cwordtm.version.__version__" title="Link to this definition"></a></dt>
+<dd><p>Version information</p>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm.viz">
+<span id="cwordtm-viz-module"></span><h2>cwordtm.viz module<a class="headerlink" href="#module-cwordtm.viz" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.viz.chi_wordcloud">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.viz.</span></span><span class="sig-name descname"><span class="pre">chi_wordcloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/viz.html#chi_wordcloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.viz.chi_wordcloud" title="Link to this definition"></a></dt>
+<dd><p>Prepare and show a Chinese wordcloud</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em>) – The collection of Chinese documents for preparing a wordcloud,
+default to None</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Size (width, height) of word cloud, default to (15, 10)</p></li>
+<li><p><strong>bg</strong> (<em>str</em><em>, </em><em>optional</em>) – The background color (name) of the wordcloud, default to ‘white’</p></li>
+<li><p><strong>image</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The filename of the presribed image as the mask of the wordcloud,
+or 1/2/3/4 for using an internal image (heart / disc / triangle / arrow),
+default to 0 (No image mask)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.viz.plot_cloud">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.viz.</span></span><span class="sig-name descname"><span class="pre">plot_cloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wordcloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/viz.html#plot_cloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.viz.plot_cloud" title="Link to this definition"></a></dt>
+<dd><p>Plot the prepared ‘wordcloud’
+:param wordcloud: The WordCloud object for plotting, default to None
+:type wordcloud: WordCloud object
+:param figsize: Size (width, height) of word cloud, default to None
+:type figsize: tuple</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cwordtm.viz.show_wordcloud">
+<span class="sig-prename descclassname"><span class="pre">cwordtm.viz.</span></span><span class="sig-name descname"><span class="pre">show_wordcloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cwordtm/viz.html#show_wordcloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cwordtm.viz.show_wordcloud" title="Link to this definition"></a></dt>
+<dd><p>Prepare and show a wordcloud</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>docs</strong> (<em>pandas.DataFrame</em>) – The collection of documents for preparing a wordcloud,
+default to None</p></li>
+<li><p><strong>clean</strong> (<em>bool</em><em>, </em><em>optional</em>) – The flag whether text preprocessing is needed,
+default to False</p></li>
+<li><p><strong>figsize</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Size (width, height) of word cloud, default to (12, 8)</p></li>
+<li><p><strong>bg</strong> (<em>str</em><em>, </em><em>optional</em>) – The background color (name) of the wordcloud, default to ‘white’</p></li>
+<li><p><strong>image</strong> (<em>int</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The filename of the presribed image as the mask of the wordcloud,
+or 1/2/3/4 for using an internal image (heart / disc / triangle / arrow),
+default to 0 (No image mask)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-cwordtm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cwordtm" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="CWordTM API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cwordtm.data.html" class="btn btn-neutral float-right" title="cwordtm.data Folder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Johnny Cheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

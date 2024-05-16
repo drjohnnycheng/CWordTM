@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cwordtm.meta &mdash; CWordTM 0.6.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2bd037f0"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CWordTM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">CWordTM Package (cwordtm 0.6.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CWordTM API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CWordTM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">cwordtm.meta</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for cwordtm.meta</h1><div class="highlight"><pre>
+<span></span><span class="c1"># meta.py</span>
+<span class="c1">#</span>
+<span class="c1"># Add meta features to functions of a module</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2024 CWordTM Project </span>
+<span class="c1"># Author: Johnny Cheng &lt;drjohnnycheng@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># Updated: 16 May 2024</span>
+<span class="c1">#</span>
+<span class="c1"># URL: https://github.com/drjohnnycheng/cwordtm.git</span>
+<span class="c1"># For license information, see LICENSE.TXT</span>
+
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">pkgutil</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<div class="viewcode-block" id="get_module_info">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.meta.get_module_info">[docs]</a>
+<span class="k">def</span> <span class="nf">get_module_info</span><span class="p">(</span><span class="n">detailed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the information of the module &#39;cwordtm&#39;.</span>
+
+<span class="sd">    :param detailed: The flag indicating whether only function signature or</span>
+<span class="sd">        detailed source code is shown, default to False</span>
+<span class="sd">    :type detailed: bool, optional</span>
+<span class="sd">    :return: The information of the module &#39;cwordtm&#39;</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mod_name</span> <span class="o">=</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># Current module</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">mod_name</span><span class="p">)</span>
+    <span class="n">func1</span> <span class="o">=</span> <span class="s2">&quot;@validate_params&quot;</span>
+    <span class="n">func2</span> <span class="o">=</span> <span class="s2">&quot;def cosine_similarity&quot;</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">mod_info</span> <span class="o">=</span> <span class="s2">&quot;The member information of the module &#39;&quot;</span> <span class="o">+</span> <span class="n">mod_name</span> <span class="o">+</span> <span class="s2">&quot;&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">submodname</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">__path__</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ispkg</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">mod_info</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">. Submodule </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">submodname</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">submod</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;..&quot;</span><span class="o">+</span><span class="n">submodname</span><span class="p">,</span> <span class="n">mod_name</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="o">+</span><span class="n">submodname</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">submod</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;LDA&#39;</span><span class="p">,</span> <span class="s1">&#39;NMF&#39;</span><span class="p">,</span> <span class="s1">&#39;BTM&#39;</span><span class="p">])</span> <span class="ow">or</span> \
+                   <span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">isfunction</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;files&#39;</span> <span class="ow">and</span>
+                    <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">func1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">func2</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">detailed</span><span class="p">:</span>
+                        <span class="n">mod_info</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">member</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">mod_info</span> <span class="o">+=</span> <span class="s2">&quot;   </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">member</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">mod_info</span></div>
+
+
+
+<div class="viewcode-block" id="get_function">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.meta.get_function">[docs]</a>
+<span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="n">submodules</span><span class="p">,</span> <span class="n">func_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the object of the function &#39;func_name&#39; if it belongs</span>
+<span class="sd">    to one of &#39;submodules&#39; of the current top-level module.</span>
+
+<span class="sd">    :param mod_name: The name of the source top-level module, default to None</span>
+<span class="sd">    :type mod_name: str</span>
+<span class="sd">    :param submodules: The list of names of the sub-modules of the top-level module</span>
+<span class="sd">    :type submodules: list</span>
+<span class="sd">    :param func_name: The name of the fuunction to be looked for</span>
+<span class="sd">    :type func_name: str</span>
+<span class="sd">    :return: The object of the target function, if any, otherwise None</span>
+<span class="sd">    :rtype: function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">submod</span> <span class="ow">in</span> <span class="n">submodules</span><span class="p">:</span>
+        <span class="n">mod_obj</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">mod_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">submod</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mod_obj</span><span class="p">,</span> <span class="n">func_name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod_obj</span><span class="p">,</span> <span class="n">func_name</span><span class="p">),</span> <span class="n">submod</span>
+
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="addin">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.meta.addin">[docs]</a>
+<span class="k">def</span> <span class="nf">addin</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Adds additional features (showing timing information and source code)</span>
+<span class="sd">    to a function at runtime. This adds two parameters (&#39;timing&#39; &amp; &#39;code&#39;) to</span>
+<span class="sd">    function &#39;func&#39; at runtime. &#39;timing&#39; is a flag indicating whether</span>
+<span class="sd">    the execution time of the function is shown, and it is default to False.</span>
+<span class="sd">    &#39;code&#39; is an indicator determining if the source code of the function</span>
+<span class="sd">    &#39;func&#39; is shown and/or the function is invoked; &#39;0&#39; indicates the function</span>
+<span class="sd">    is executed but its source code is not shown, &#39;1&#39; indicates the source code</span>
+<span class="sd">    of the function is shown after execution, or &#39;2&#39; indicates the source code</span>
+<span class="sd">    of the function is shown without execution, and it is default to 0.</span>
+
+<span class="sd">    :param func: The target function for inserting additiolnal features - </span>
+<span class="sd">        timing information and showing code, default to None</span>
+<span class="sd">    :type func: function</span>
+<span class="sd">    :return: The wrapper function</span>
+<span class="sd">    :rtype: function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;code&quot;</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">mod_name</span> <span class="o">=</span> <span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">mod_name</span><span class="p">)</span>
+
+    <span class="c1"># Get Submodules of cwordtm</span>
+    <span class="n">submodules</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> 
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="p">))]</span>
+
+    <span class="n">exclusion</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">,</span> <span class="s2">&quot;WordCloud&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">next_level</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="n">source_code</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source_code</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
+                <span class="n">func_call_code</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">get_source_segment</span><span class="p">(</span><span class="n">source_code</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+                <span class="n">func_name</span> <span class="o">=</span> <span class="n">func_call_code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">func_obj</span><span class="p">,</span> <span class="n">submod</span> <span class="o">=</span> <span class="n">get_function</span><span class="p">(</span><span class="n">mod_name</span><span class="p">,</span> <span class="n">submodules</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">func_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">func_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclusion</span><span class="p">:</span>
+                    <span class="n">module_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmodule</span><span class="p">(</span><span class="n">func_obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt;&gt;&quot;</span><span class="p">,</span> <span class="n">module_name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">func_name</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func_obj</span><span class="p">))</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">timing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper function to add two parameters (&#39;timing&#39; &amp; &#39;code&#39;) to</span>
+<span class="sd">        function &#39;func&#39; at runtime.</span>
+
+<span class="sd">        :param timing: The flag indicating whether the execution time of the</span>
+<span class="sd">        function &#39;func&#39; is shown, default to False</span>
+<span class="sd">        :type timing: bool, optional</span>
+<span class="sd">        :param code: The indicator determining if the source code of the function</span>
+<span class="sd">            &#39;func&#39; is shown and/or the function is invoked; &#39;0&#39; indicates the function</span>
+<span class="sd">            is executed but its source code is not shown, &#39;1&#39; indicates the source code</span>
+<span class="sd">            of the function is shown after execution, or &#39;2&#39; indicates the source code</span>
+<span class="sd">            of the function is shown without execution, default to 0</span>
+<span class="sd">        :type code: bool, optional</span>
+<span class="sd">        :return: The execution time (in seconds) of the function &#39;func&#39;</span>
+<span class="sd">        :rtype: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+            <span class="n">run_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+
+            <span class="k">if</span> <span class="n">timing</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finished </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> in </span><span class="si">{</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> secs&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">BuiltinFunctionType</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Source code of the funcrion &#39;</span><span class="si">%s</span><span class="s2">&#39; cannot be retrieved!&quot;</span> \
+                          <span class="o">%</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
+                    <span class="n">next_level</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+ 
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">BuiltinFunctionType</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Source code of the funcrion &#39;</span><span class="si">%s</span><span class="s2">&#39; cannot be retrieved!&quot;</span> \
+                      <span class="o">%</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">next_level</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;timing&quot;</span><span class="p">,</span>
+                                    <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">,</span>
+                                    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">,</span>
+                                    <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">KEYWORD_ONLY</span><span class="p">,</span>
+                                    <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">wrapper</span><span class="o">.</span><span class="n">__signature__</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+
+<div class="viewcode-block" id="addin_all_functions">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.meta.addin_all_functions">[docs]</a>
+<span class="k">def</span> <span class="nf">addin_all_functions</span><span class="p">(</span><span class="n">submod</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies &#39;addin&#39; function to all functions of a module at runtime.</span>
+
+<span class="sd">    :param submod: The target sub-module of which all the functions are inserted</span>
+<span class="sd">        additional features, default to None</span>
+<span class="sd">    :type submod: module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">submod</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">member</span><span class="p">)</span> <span class="ow">and</span> \
+           <span class="n">member</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;files&#39;</span> <span class="ow">and</span> \
+           <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">submod</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">addin</span><span class="p">(</span><span class="n">member</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="addin_all">
+<a class="viewcode-back" href="../../cwordtm.html#cwordtm.meta.addin_all">[docs]</a>
+<span class="k">def</span> <span class="nf">addin_all</span><span class="p">(</span><span class="n">modname</span><span class="o">=</span><span class="s1">&#39;cwordtm&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies &#39;addin&#39; function to all functions of all sub-modules of</span>
+<span class="sd">    a module at runtime.</span>
+
+<span class="sd">    :param modname: The target module of which all the functions are inserted</span>
+<span class="sd">        additional features, default to &#39;wordtm&#39;</span>
+<span class="sd">    :type modname: str, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">module</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">&quot;__path__&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">submodname</span><span class="p">,</span> <span class="n">ispkg</span> <span class="ow">in</span> <span class="n">pkgutil</span><span class="o">.</span><span class="n">iter_modules</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">__path__</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ispkg</span> <span class="ow">and</span> <span class="n">submodname</span> <span class="o">!=</span> <span class="s1">&#39;meta&#39;</span><span class="p">:</span>
+                <span class="n">submod</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;..&quot;</span> <span class="o">+</span> <span class="n">submodname</span><span class="p">,</span> \
+                                       <span class="n">modname</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">submodname</span><span class="p">)</span>
+                <span class="n">addin_all_functions</span><span class="p">(</span><span class="n">submod</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">addin_all_functions</span><span class="p">(</span><span class="n">module</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Johnny Cheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
