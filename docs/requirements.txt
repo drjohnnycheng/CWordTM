@@ -14,7 +14,7 @@ plotly
 pyLDAvis
 regex
 scikit-learn
-scipy==1.13
+scipy
 seaborn
 spacy
 sphinx
