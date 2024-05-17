@@ -5,4 +5,4 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cwordtm"
 authors = [{name = "Johnny Cheng", email = "drjohnnycheng@gmail.com"}]
-dynamic = ["version", "description"]
+dynamic = ["version"]
