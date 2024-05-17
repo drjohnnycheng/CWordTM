@@ -2,10 +2,6 @@
 requires = ["setuptools >= 61.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["cwordtm"]
-namespaces = false
-
 [project]
 name = "cwordtm"
 authors = [{name = "Johnny Cheng", email = "drjohnnycheng@gmail.com"}]
