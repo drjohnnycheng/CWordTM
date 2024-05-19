@@ -8,6 +8,10 @@ build:
 python:
   install:
     - requirements: docs/requirements.txt
+    - requirements: docs/requirements_extra.txt
+    - method: pip
+      path: .
+  system_packages: true
 
 sphinx:
   configuration: docs/source/conf.py
