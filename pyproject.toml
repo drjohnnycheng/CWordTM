@@ -10,3 +10,6 @@ namespaces = false
 name = "cwordtm"
 authors = [{name = "Johnny Cheng", email = "drjohnnycheng@gmail.com"}]
 dynamic = ["version"]
+dependencies = [
+  "scipy==1.10.1",
+]
