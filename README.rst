@@ -1,4 +1,4 @@
-CWordTM Package (cwordtm 0.6.1)
+CWordTM Package (cwordtm 0.6.2)
 ===============================
 
 A Topic Modeling Toolkit from Low-code to Pro-code
@@ -41,7 +41,7 @@ to all functions of the module.
 
    print(meta.get_module_info())
 
-   print(meta.get_module_info(detailed=True))
+   print(meta.get_submodule_info('viz', detailed=True))
 
 
 quot Submodule
