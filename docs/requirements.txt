@@ -14,6 +14,7 @@ plotly
 pyLDAvis
 regex
 scikit-learn
+scipy
 seaborn
 spacy
 sphinx
@@ -22,4 +23,3 @@ torch
 transformers
 wordcloud
 wikipedia
-scipy==1.12.0
