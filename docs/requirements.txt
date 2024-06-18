@@ -22,4 +22,3 @@ torch
 transformers
 wordcloud
 wikipedia
-scipy==1.12.0
