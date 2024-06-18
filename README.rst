@@ -133,9 +133,7 @@ Usage demo file with output:
 Documentation
 -------------
 
-``cwordtm`` documentation can be reached from:
-
-https://cwordtm.readthedocs.io
+``cwordtm`` documentation can be reached from: https://cwordtm.readthedocs.io
 
 Contributing
 ------------
