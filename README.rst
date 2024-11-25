@@ -126,9 +126,9 @@ Demo
 
 Usage demo file with output:
 
-#. On BBC News: `CWordTM_BBC.pdf <https://github.com/drjohnnycheng/CWordTM/blob/main/Demo/CWordTM_BBC.pdf>`_
+#. On BBC News: `CWordTM_BBC.pdf <https://github.com/drjohnnycheng/CWordTM/blob/main/Demo/CWordTM_0.7.1_BBC.pdf>`_
 
-#. On Chinese Bible (CUV): `CWordTM_CUV.pdf <https://github.com/drjohnnycheng/CWordTM/blob/main/Demo/CWordTM_CUV.pdf>`_
+#. On Chinese Bible (CUV): `CWordTM_CUV.pdf <https://github.com/drjohnnycheng/CWordTM/blob/main/Demo/CWordTM_0.7.1_CUV.pdf>`_
 
 Paper
 -----
