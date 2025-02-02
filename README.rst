@@ -1,4 +1,4 @@
-CWordTM Package (cwordtm 0.7.4)
+CWordTM Package (cwordtm 0.7.5)
 ===============================
 
 A Topic Modeling Toolkit from Low-code to Pro-code
